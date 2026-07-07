@@ -481,24 +481,31 @@ function renderItinerary(){
   let html='';
   currentItinerary.forEach((day,di)=>{
     const sub=(DAY_SUBS[state.region]||[])[di]||'';
-    html+=`<div class="day-card"><div class="day-header">${t('dayLabel')} ${di+1} <span class="day-header-sub">${sub}</span></div>`;
+    html+=`<div class="day-card">
+      <div class="day-header">${t('dayLabel')} ${di+1} <span class="day-header-sub">${sub}</span></div>
+      <div class="sortable-list" id="day-list-${di}">`;
     day.forEach((p,pi)=>{
       const name=pn(p), desc=p.desc?(p.desc[lang]||p.desc.ko):'', move=p.move?(p.move[lang]||p.move.ko):'';
-      html+=`<div class="place-item" id="item-${di}-${pi}">
-        <div class="time-col">${p.time}</div>
-        <div class="place-thumb">${p.icon}</div>
-        <div class="place-info">
-          ${ribbonHTML(p.ribbon)}
-          <span class="place-cat ${catCls(p.cat)}">${catLbl(p.cat)}</span>
-          <div class="place-name">${name}</div>
-          <div class="place-meta">${desc}${p.note?'<br/>📝 '+p.note:''}</div>
+      const arrowTxt = pi<day.length-1
+        ? `↓ ${move}${p.mc?' · <b>'+p.mc+'</b>':''}`
+        : `↓ ${t('backToHotel')} · 🏨 ${hotelName}`;
+      html+=`<div class="plan-slot">
+        <div class="place-item">
+          <div class="drag-handle" title="드래그하여 순서 변경">⠿</div>
+          <div class="time-col">${p.time}</div>
+          <div class="place-thumb">${p.icon}</div>
+          <div class="place-info">
+            ${ribbonHTML(p.ribbon)}
+            <span class="place-cat ${catCls(p.cat)}">${catLbl(p.cat)}</span>
+            <div class="place-name">${name}</div>
+            <div class="place-meta">${desc}${p.note?'<br/>📝 '+p.note:''}</div>
+          </div>
+          <button class="edit-btn" onclick="openEdit(${di},${pi})">✏️</button>
         </div>
-        <button class="edit-btn" onclick="openEdit(${di},${pi})">✏️</button>
+        <div class="arrow-row">${arrowTxt}</div>
       </div>`;
-      if(pi<day.length-1) html+=`<div class="arrow-row">↓ ${move}${p.mc?' · <b>'+p.mc+'</b>':''}</div>`;
-      else html+=`<div class="arrow-row">↓ ${t('backToHotel')} · 🏨 ${hotelName}</div>`;
     });
-    html+='</div>';
+    html+=`</div></div>`;
   });
   // Route card
   const d0=currentItinerary[0]||[];
@@ -506,6 +513,7 @@ function renderItinerary(){
   html+=`<div class="route-card"><div style="font-size:14px;font-weight:700">📍 ${t('routeTitle')}</div>
     <div class="route-flow"><span class="hotel-node">🏨 ${t('hotel')}</span><span style="color:var(--sub);font-size:12px">→</span>${nodes}<span class="hotel-node">🏨 ${t('hotel')}</span></div></div>`;
   document.getElementById('itinerary-container').innerHTML=html;
+  initSortable();
 }
 
 // ── MAP ───────────────────────────────────────────────────
