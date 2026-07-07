@@ -73,7 +73,13 @@ body{font-family:"Apple SD Gothic Neo","Malgun Gothic",Arial,sans-serif;color:va
 .day-header{padding:13px 16px;background:var(--blue);color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;gap:8px}
 .day-header-sub{font-weight:400;font-size:12px;opacity:.8}
 .place-item{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-top:1px solid var(--line);transition:background .1s;position:relative}
-.place-item:first-of-type{border-top:none}
+.plan-slot:first-child .place-item{border-top:none}
+/* DRAG & SORT */
+.drag-handle{cursor:grab;color:#9ca3af;font-size:16px;padding-top:2px;flex-shrink:0;align-self:center;user-select:none;touch-action:none;line-height:1}
+.drag-handle:active{cursor:grabbing;color:var(--blue)}
+.plan-slot.sortable-ghost .place-item{opacity:.35;background:#e0e7ff;border-radius:0}
+.plan-slot.sortable-chosen .place-item{background:#f0f5ff}
+.plan-slot.sortable-drag{box-shadow:0 8px 28px rgba(37,99,235,.22);border-radius:12px;overflow:hidden;background:#fff}
 .time-col{min-width:48px;font-size:12px;font-weight:700;color:var(--blue);padding-top:2px}
 .place-thumb{width:50px;height:42px;border-radius:10px;background:var(--blue-light);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px}
 .place-info{flex:1;min-width:0;padding-right:40px}
