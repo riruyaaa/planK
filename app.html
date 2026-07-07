@@ -3,849 +3,559 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>플렌K - 나에게 딱 맞는 한국 여행 플랜</title>
+<title>플렌K - 여행 플랜</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
-:root {
-  --blue: #2563eb;
-  --blue-light: #eff6ff;
-  --blue-mid: #bfdbfe;
-  --green: #10b981;
-  --ink: #111827;
-  --sub: #6b7280;
-  --line: #e5e7eb;
-  --bg: #f8fafc;
-  --white: #ffffff;
-  --radius: 16px;
-  --shadow: 0 4px 20px rgba(37,99,235,.10);
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif;
-  background: var(--bg);
-  color: var(--ink);
-  min-height: 100vh;
-}
-
-/* PAGE SYSTEM */
-.page { display: none; min-height: 100vh; }
-.page.active { display: flex; flex-direction: column; }
-
-/* ─────────── PAGE 1: INTRO ─────────── */
-#p-intro {
-  background: linear-gradient(160deg, #1e3a8a 0%, #2563eb 50%, #7c3aed 100%);
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 40px 24px;
-  position: relative;
-  overflow: hidden;
-}
-#p-intro::before {
-  content: "";
-  position: absolute;
-  width: 600px; height: 600px;
-  background: rgba(255,255,255,.04);
-  border-radius: 50%;
-  top: -200px; right: -200px;
-}
-#p-intro::after {
-  content: "";
-  position: absolute;
-  width: 400px; height: 400px;
-  background: rgba(255,255,255,.04);
-  border-radius: 50%;
-  bottom: -150px; left: -150px;
-}
-.intro-inner { position: relative; z-index: 1; max-width: 400px; }
-.logo-wrap { margin-bottom: 40px; }
-.logo {
-  font-size: 48px; font-weight: 900;
-  color: #fff; letter-spacing: -1px;
-}
-.logo span { color: #93c5fd; }
-.logo-sub {
-  font-size: 13px; color: rgba(255,255,255,.6);
-  margin-top: 4px; letter-spacing: 2px;
-}
-.intro-title {
-  font-size: 32px; font-weight: 800;
-  color: #fff; line-height: 1.3;
-  margin-bottom: 18px;
-}
-.intro-desc {
-  font-size: 15px; color: rgba(255,255,255,.75);
-  line-height: 1.7; margin-bottom: 48px;
-}
-.badges {
-  display: flex; flex-wrap: wrap; gap: 8px;
-  justify-content: center; margin-bottom: 40px;
-}
-.badge {
-  background: rgba(255,255,255,.15);
-  color: #fff; border-radius: 999px;
-  padding: 6px 14px; font-size: 13px;
-  backdrop-filter: blur(4px);
-}
-.btn-main {
-  display: block; width: 100%;
-  background: #fff; color: var(--blue);
-  font-size: 18px; font-weight: 800;
-  padding: 18px; border-radius: 16px;
-  border: none; cursor: pointer;
-  box-shadow: 0 8px 32px rgba(0,0,0,.2);
-  transition: transform .15s, box-shadow .15s;
-}
-.btn-main:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,.25); }
-.btn-main:active { transform: translateY(0); }
-
-/* ─────────── PAGE 2: INPUT ─────────── */
-#p-input { background: var(--bg); }
-.top-bar {
-  background: var(--white);
-  border-bottom: 1px solid var(--line);
-  padding: 16px 20px;
-  display: flex; align-items: center; gap: 12px;
-  position: sticky; top: 0; z-index: 10;
-}
-.back-btn {
-  background: none; border: none; cursor: pointer;
-  font-size: 20px; color: var(--ink); padding: 4px;
-}
-.top-bar-title { font-size: 17px; font-weight: 700; }
-.top-bar-step { margin-left: auto; font-size: 13px; color: var(--sub); }
-
-.progress-bar {
-  height: 3px; background: var(--line);
-}
-.progress-fill {
-  height: 100%; background: var(--blue);
-  transition: width .3s;
-}
-
-.input-body { padding: 20px; max-width: 600px; margin: 0 auto; }
-
-.section-label {
-  font-size: 12px; font-weight: 700;
-  color: var(--sub); letter-spacing: 1px;
-  margin: 24px 0 10px;
-  text-transform: uppercase;
-}
-.section-label:first-child { margin-top: 4px; }
-.q-title { font-size: 17px; font-weight: 700; margin-bottom: 12px; }
-
-/* Region chips */
-.chip-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
-}
-.chip-grid.col3 { grid-template-columns: repeat(3, 1fr); }
-.chip-grid.col2 { grid-template-columns: repeat(2, 1fr); }
-.chip {
-  padding: 12px 8px; border: 1.5px solid var(--line);
-  border-radius: 12px; background: var(--white);
-  text-align: center; font-size: 14px; font-weight: 600;
-  cursor: pointer; transition: all .15s; color: var(--ink);
-}
-.chip:hover { border-color: var(--blue); color: var(--blue); }
-.chip.sel {
-  background: var(--blue); color: #fff;
-  border-color: var(--blue);
-}
-.chip.multi.sel {
-  background: var(--blue-light); color: var(--blue);
-  border-color: var(--blue);
-}
-
-/* Date input */
-.date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.date-field {
-  border: 1.5px solid var(--line); border-radius: 12px;
-  padding: 14px; background: var(--white);
-}
-.date-field label { display: block; font-size: 11px; color: var(--sub); margin-bottom: 4px; }
-.date-field input {
-  border: none; outline: none; width: 100%;
-  font-size: 14px; font-weight: 600; color: var(--ink);
-  background: transparent; cursor: pointer;
-}
-
-/* MBTI select */
-.select-field {
-  border: 1.5px solid var(--line); border-radius: 12px;
-  padding: 14px 16px; background: var(--white);
-  display: flex; align-items: center; justify-content: space-between;
-  cursor: pointer;
-}
-.select-field span { font-size: 15px; font-weight: 600; color: var(--sub); }
-.select-field .arrow { color: var(--sub); }
-
-select.native {
-  width: 100%; border: 1.5px solid var(--line);
-  border-radius: 12px; padding: 14px 16px;
-  font-size: 15px; font-weight: 600; color: var(--ink);
-  background: var(--white); cursor: pointer; outline: none;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 16px center;
-}
-
-.divider { height: 1px; background: var(--line); margin: 20px 0; }
-
-.btn-primary {
-  width: 100%; padding: 18px;
-  background: var(--blue); color: #fff;
-  font-size: 17px; font-weight: 800;
-  border: none; border-radius: 16px;
-  cursor: pointer; margin-top: 28px;
-  transition: background .15s, transform .1s;
-}
-.btn-primary:hover { background: #1d4ed8; }
-.btn-primary:active { transform: scale(.99); }
-
-/* ─────────── LOADING ─────────── */
-#p-loading {
-  background: linear-gradient(160deg, #1e3a8a 0%, #2563eb 100%);
-  align-items: center; justify-content: center;
-  text-align: center;
-}
-.loading-inner { color: #fff; }
-.spinner {
-  width: 64px; height: 64px;
-  border: 5px solid rgba(255,255,255,.2);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 28px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-title { font-size: 24px; font-weight: 800; margin-bottom: 12px; }
-.loading-desc { font-size: 14px; color: rgba(255,255,255,.7); line-height: 1.6; }
-.loading-steps { margin-top: 32px; display: flex; flex-direction: column; gap: 10px; }
-.loading-step {
-  background: rgba(255,255,255,.12);
-  border-radius: 10px; padding: 12px 20px;
-  font-size: 13px; color: rgba(255,255,255,.8);
-  display: flex; align-items: center; gap: 10px;
-}
-.step-icon { font-size: 18px; }
-
-/* ─────────── PAGE 3: RESULT ─────────── */
-#p-result { background: var(--bg); }
-
-.result-hero {
-  background: linear-gradient(135deg, #1e40af, #2563eb);
-  padding: 28px 20px 24px;
-  color: #fff;
-}
-.result-badge {
-  background: rgba(255,255,255,.2);
-  display: inline-block; border-radius: 999px;
-  padding: 4px 12px; font-size: 12px;
-  margin-bottom: 12px;
-}
-.result-title { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
-.result-sub { font-size: 14px; color: rgba(255,255,255,.8); }
-.result-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
-.result-tag {
-  background: rgba(255,255,255,.15);
-  border-radius: 999px; padding: 4px 12px;
-  font-size: 12px; color: #fff;
-}
-
-.result-body { padding: 20px; max-width: 600px; margin: 0 auto; }
-
-.summary-card {
-  background: var(--white); border-radius: var(--radius);
-  padding: 18px; margin-bottom: 20px;
-  border: 1px solid var(--line);
-  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
-}
-.summary-item label { display: block; font-size: 11px; color: var(--sub); margin-bottom: 3px; }
-.summary-item span { font-size: 14px; font-weight: 700; }
-
-.day-card {
-  background: var(--white); border-radius: var(--radius);
-  border: 1px solid var(--line); margin-bottom: 16px;
-  overflow: hidden;
-}
-.day-header {
-  padding: 14px 18px;
-  background: var(--blue); color: #fff;
-  font-size: 15px; font-weight: 800;
-  display: flex; align-items: center; gap: 8px;
-}
-.day-header-sub { font-weight: 400; font-size: 13px; opacity: .8; }
-
-.place-item {
-  display: flex; align-items: flex-start; gap: 14px;
-  padding: 16px 18px; border-top: 1px solid var(--line);
-  cursor: pointer; transition: background .1s;
-}
-.place-item:hover { background: #f9fafb; }
-.place-item:first-of-type { border-top: none; }
-
-.time-col {
-  min-width: 52px; font-size: 13px;
-  font-weight: 700; color: var(--blue); padding-top: 2px;
-}
-.place-thumb {
-  width: 56px; height: 46px; border-radius: 10px;
-  background: var(--blue-mid); flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px;
-}
-.place-info { flex: 1; }
-.place-name { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
-.place-meta { font-size: 12px; color: var(--sub); line-height: 1.5; }
-.place-cat {
-  display: inline-block; background: var(--blue-light);
-  color: var(--blue); border-radius: 6px;
-  padding: 2px 7px; font-size: 11px; font-weight: 700;
-  margin-bottom: 3px;
-}
-
-.arrow-row {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 18px 8px 84px;
-  border-top: 1px solid var(--line);
-  background: #f9fafb;
-}
-.arrow-dot { color: var(--sub); font-size: 11px; }
-.arrow-info { font-size: 12px; color: var(--sub); }
-.arrow-info b { color: var(--blue); }
-
-.route-card {
-  background: var(--white); border-radius: var(--radius);
-  border: 1px solid var(--line); padding: 18px;
-  margin-bottom: 16px;
-}
-.route-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
-.route-flow {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
-}
-.route-node {
-  background: var(--blue-light); color: var(--blue);
-  border-radius: 10px; padding: 8px 12px;
-  font-size: 13px; font-weight: 700;
-}
-.route-arrow { color: var(--sub); font-size: 14px; }
-
-.action-row {
-  display: grid; grid-template-columns: 1fr 1fr 1fr;
-  gap: 10px; margin-top: 8px; margin-bottom: 24px;
-}
-.action-btn {
-  padding: 14px; border-radius: 14px;
-  font-size: 14px; font-weight: 700;
-  border: none; cursor: pointer; transition: all .15s;
-}
-.action-btn.primary { background: var(--blue); color: #fff; }
-.action-btn.out { background: var(--white); color: var(--blue); border: 1.5px solid var(--blue); }
-.action-btn.gray { background: var(--white); color: var(--ink); border: 1.5px solid var(--line); }
-.action-btn:hover { opacity: .85; transform: translateY(-1px); }
-
-/* ─────────── BOTTOM NAV ─────────── */
-.bottom-nav {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: var(--white); border-top: 1px solid var(--line);
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  padding: 8px 0 max(8px, env(safe-area-inset-bottom));
-  z-index: 100;
-}
-.nav-item {
-  display: flex; flex-direction: column; align-items: center;
-  gap: 3px; padding: 6px 4px; cursor: pointer;
-  font-size: 11px; color: var(--sub); border: none;
-  background: none; transition: color .15s;
-}
-.nav-item.active { color: var(--blue); }
-.nav-item .icon { font-size: 22px; }
-.has-nav { padding-bottom: 80px; }
-
-/* Toast */
-.toast {
-  position: fixed; bottom: 90px; left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: var(--ink); color: #fff;
-  padding: 12px 20px; border-radius: 12px;
-  font-size: 14px; font-weight: 600;
-  opacity: 0; pointer-events: none;
-  transition: all .3s; white-space: nowrap; z-index: 200;
-}
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-@media (min-width: 640px) {
-  .chip-grid { grid-template-columns: repeat(5, 1fr); }
-  .chip-grid.col3 { grid-template-columns: repeat(4, 1fr); }
-}
+:root{--blue:#2563eb;--blue-dark:#1e40af;--blue-light:#eff6ff;--ink:#111827;--sub:#6b7280;--line:#e5e7eb;--bg:#f8fafc;--white:#fff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Apple SD Gothic Neo","Malgun Gothic",Arial,sans-serif;color:var(--ink);background:var(--bg);overflow-x:hidden}
+.page{display:none;min-height:100vh;flex-direction:column}
+.page.active{display:flex}
+/* LANG */
+.lang-sw{position:fixed;top:10px;right:12px;z-index:999;display:flex;gap:4px}
+.lang-btn{padding:5px 9px;border-radius:8px;border:1.5px solid var(--line);background:var(--white);color:var(--sub);font-size:12px;font-weight:700;cursor:pointer;transition:.15s}
+.lang-btn.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+/* TOP BAR */
+.top-bar{background:var(--white);border-bottom:1px solid var(--line);padding:0 20px;height:54px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
+.back-btn{background:none;border:none;cursor:pointer;font-size:20px;color:var(--ink);padding:4px}
+.top-title{font-size:17px;font-weight:700}
+.top-step{margin-left:auto;font-size:13px;color:var(--sub)}
+.prog{height:3px;background:var(--line)}.prog-fill{height:100%;background:var(--blue);transition:width .3s}
+/* INPUT */
+.input-body{padding:20px;max-width:600px;margin:0 auto;padding-bottom:40px}
+.sec-lbl{font-size:11px;font-weight:700;color:var(--sub);letter-spacing:1px;margin:22px 0 8px;text-transform:uppercase}
+.q-title{font-size:16px;font-weight:700;margin-bottom:10px}
+.chip-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.chip-grid.c3{grid-template-columns:repeat(3,1fr)}
+.chip-grid.c2{grid-template-columns:repeat(2,1fr)}
+.chip{padding:11px 6px;border:1.5px solid var(--line);border-radius:12px;background:var(--white);text-align:center;font-size:13px;font-weight:600;cursor:pointer;transition:.15s;color:var(--ink);line-height:1.3}
+.chip:hover{border-color:var(--blue);color:var(--blue)}
+.chip.sel{background:var(--blue);color:#fff;border-color:var(--blue)}
+.chip.multi.sel{background:var(--blue-light);color:var(--blue);border-color:var(--blue)}
+.date-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.date-field{border:1.5px solid var(--line);border-radius:12px;padding:13px;background:var(--white)}
+.date-field label{display:block;font-size:11px;color:var(--sub);margin-bottom:4px}
+.date-field input{border:none;outline:none;width:100%;font-size:14px;font-weight:600;color:var(--ink);background:transparent}
+.native-sel{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:13px 16px;font-size:15px;font-weight:600;color:var(--ink);background:var(--white);cursor:pointer;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+.divider{height:1px;background:var(--line);margin:18px 0}
+.btn-primary{width:100%;padding:17px;background:var(--blue);color:#fff;font-size:16px;font-weight:800;border:none;border-radius:14px;cursor:pointer;margin-top:24px;transition:.15s}
+.btn-primary:hover{background:var(--blue-dark)}
+/* LOADING */
+#p-loading{background:linear-gradient(160deg,#0f172a,#1e3a8a);align-items:center;justify-content:center;text-align:center}
+.spinner{width:60px;height:60px;border:5px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 24px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ld-title{font-size:22px;font-weight:800;color:#fff;margin-bottom:10px}
+.ld-desc{font-size:14px;color:rgba(255,255,255,.7);line-height:1.6}
+.ld-steps{margin-top:28px;display:flex;flex-direction:column;gap:8px;max-width:300px}
+.ld-step{background:rgba(255,255,255,.1);border-radius:10px;padding:11px 16px;font-size:13px;color:rgba(255,255,255,.4);text-align:left;transition:all .3s}
+.ld-step.on{color:#fff;background:rgba(255,255,255,.2)}
+/* RESULT */
+#p-result{background:var(--bg)}
+.result-hero{background:linear-gradient(135deg,#1e40af,#2563eb);padding:24px 20px;color:#fff}
+.result-badge{background:rgba(255,255,255,.2);display:inline-block;border-radius:999px;padding:4px 12px;font-size:12px;margin-bottom:10px}
+.result-title{font-size:24px;font-weight:900;margin-bottom:5px}
+.result-sub{font-size:14px;color:rgba(255,255,255,.8)}
+.result-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.result-tag{background:rgba(255,255,255,.15);border-radius:999px;padding:3px 11px;font-size:12px;color:#fff}
+.result-body{padding:16px;max-width:640px;margin:0 auto;padding-bottom:90px}
+.sum-card{background:var(--white);border-radius:16px;padding:16px;margin-bottom:16px;border:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sum-item label{display:block;font-size:11px;color:var(--sub);margin-bottom:2px}
+.sum-item span{font-size:14px;font-weight:700}
+/* MAP */
+.map-section{background:var(--white);border-radius:16px;border:1px solid var(--line);overflow:hidden;margin-bottom:16px}
+.map-header{padding:14px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.map-header-title{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+.map-toggle-btn{background:var(--blue-light);color:var(--blue);border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer}
+#plan-map{height:300px;display:none}
+#plan-map.show{display:block}
+/* DAY CARD */
+.day-card{background:var(--white);border-radius:16px;border:1px solid var(--line);margin-bottom:14px;overflow:hidden}
+.day-header{padding:13px 16px;background:var(--blue);color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;gap:8px}
+.day-header-sub{font-weight:400;font-size:12px;opacity:.8}
+.place-item{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-top:1px solid var(--line);transition:background .1s;position:relative}
+.place-item:first-of-type{border-top:none}
+.time-col{min-width:48px;font-size:12px;font-weight:700;color:var(--blue);padding-top:2px}
+.place-thumb{width:50px;height:42px;border-radius:10px;background:var(--blue-light);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px}
+.place-info{flex:1;min-width:0;padding-right:40px}
+.place-cat{display:inline-block;background:var(--blue-light);color:var(--blue);border-radius:6px;padding:2px 7px;font-size:11px;font-weight:700;margin-bottom:3px}
+.place-cat.food{background:#fef3c7;color:#92400e}
+.place-cat.cafe{background:#ecfdf5;color:#065f46}
+.place-name{font-size:14px;font-weight:700;margin-bottom:2px}
+.place-meta{font-size:12px;color:var(--sub);line-height:1.5}
+.ribbon-badge{display:inline-flex;align-items:center;gap:3px;background:#fff7ed;color:#c2410c;border-radius:6px;padding:2px 7px;font-size:11px;font-weight:700;margin-bottom:3px}
+.edit-btn{position:absolute;top:12px;right:12px;background:none;border:1px solid var(--line);border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer;color:var(--sub);transition:.15s}
+.edit-btn:hover{background:var(--blue-light);color:var(--blue);border-color:var(--blue)}
+.arrow-row{display:flex;align-items:center;gap:8px;padding:7px 16px 7px 78px;border-top:1px solid var(--line);background:#fafafa;font-size:12px;color:var(--sub)}
+.arrow-row b{color:var(--blue)}
+.route-card{background:var(--white);border-radius:16px;border:1px solid var(--line);padding:16px;margin-bottom:14px}
+.route-flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px}
+.route-node{background:var(--blue-light);color:var(--blue);border-radius:10px;padding:7px 11px;font-size:13px;font-weight:700}
+.hotel-node{background:#fee2e2;color:#991b1b;border-radius:10px;padding:7px 11px;font-size:13px;font-weight:700}
+.action-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px}
+.action-btn{padding:13px;border-radius:13px;font-size:14px;font-weight:700;border:none;cursor:pointer;transition:.15s}
+.action-btn.primary{background:var(--blue);color:#fff}
+.action-btn.out{background:var(--white);color:var(--blue);border:1.5px solid var(--blue)}
+.action-btn.gray{background:var(--white);color:var(--ink);border:1.5px solid var(--line)}
+.action-btn:hover{opacity:.85;transform:translateY(-1px)}
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding:8px 0;z-index:100}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 4px;cursor:pointer;font-size:11px;color:var(--sub);border:none;background:none;transition:.15s}
+.nav-item.active{color:var(--blue)}
+.nav-item .icon{font-size:20px}
+/* EDIT MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--white);border-radius:24px 24px 0 0;padding:24px;width:100%;max-width:600px;max-height:85vh;overflow-y:auto}
+.modal-title{font-size:18px;font-weight:800;margin-bottom:20px}
+.modal-field{margin-bottom:14px}
+.modal-field label{display:block;font-size:12px;font-weight:700;color:var(--sub);margin-bottom:6px}
+.modal-field input,.modal-field textarea{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px;font-size:14px;color:var(--ink);outline:none;font-family:inherit}
+.modal-field textarea{min-height:80px;resize:vertical}
+.modal-field input:focus,.modal-field textarea:focus{border-color:var(--blue)}
+.modal-btns{display:flex;gap:10px;margin-top:20px}
+.modal-btn{flex:1;padding:14px;border-radius:12px;border:none;font-size:14px;font-weight:700;cursor:pointer}
+.modal-btn.save{background:var(--blue);color:#fff}
+.modal-btn.del{background:#fee2e2;color:#991b1b}
+.modal-btn.cancel{background:var(--bg);color:var(--sub)}
+/* INTRO */
+#p-intro{background:linear-gradient(160deg,#1e3a8a,#2563eb 50%,#7c3aed);align-items:center;justify-content:center;text-align:center;padding:40px 24px;position:relative;overflow:hidden}
+.intro-inner{position:relative;z-index:1;max-width:400px}
+.logo{font-size:46px;font-weight:900;color:#fff;letter-spacing:-1px;margin-bottom:4px}
+.logo span{color:#93c5fd}
+.logo-sub{font-size:12px;color:rgba(255,255,255,.5);letter-spacing:2px;margin-bottom:40px}
+.intro-title{font-size:30px;font-weight:800;color:#fff;line-height:1.3;margin-bottom:16px}
+.intro-desc{font-size:15px;color:rgba(255,255,255,.75);line-height:1.7;margin-bottom:40px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:36px}
+.badge{background:rgba(255,255,255,.15);color:#fff;border-radius:999px;padding:6px 14px;font-size:13px}
+.btn-main{display:block;width:100%;background:#fff;color:var(--blue);font-size:17px;font-weight:800;padding:17px;border-radius:15px;border:none;cursor:pointer;box-shadow:0 8px 32px rgba(0,0,0,.2);transition:.15s}
+.btn-main:hover{transform:translateY(-2px)}
+/* TOAST */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:.3s;white-space:nowrap;z-index:600}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.leaflet-control-attribution{font-size:9px}
 </style>
 </head>
 <body>
 
-<!-- ───────── PAGE 1: INTRO ───────── -->
+<!-- Language Switcher -->
+<div class="lang-sw">
+  <button class="lang-btn on" onclick="setLang('ko')">한</button>
+  <button class="lang-btn" onclick="setLang('en')">EN</button>
+  <button class="lang-btn" onclick="setLang('zh')">中</button>
+  <button class="lang-btn" onclick="setLang('ja')">日</button>
+</div>
+
+<!-- INTRO -->
 <div id="p-intro" class="page active">
   <div class="intro-inner">
-    <div class="logo-wrap">
-      <div class="logo">플렌<span>K</span></div>
-      <div class="logo-sub">KOREA TRAVEL PLANNER</div>
-    </div>
-
-    <h1 class="intro-title">나에게 딱 맞는<br/>한국 여행 플랜</h1>
-    <p class="intro-desc">
-      취향, 일정, 동선까지 고려해서<br/>
-      나만의 여행 코스를 만들어드려요.
-    </p>
-
+    <div class="logo">플렌<span>K</span></div>
+    <div class="logo-sub">KOREA TRAVEL PLANNER</div>
+    <h1 class="intro-title" data-i18n="tagline">나에게 딱 맞는 한국 여행 플랜</h1>
+    <p class="intro-desc" data-i18n="introDesc">취향, 일정, 동선까지 고려해서 나만의 여행 코스를 만들어드려요.</p>
     <div class="badges">
-      <span class="badge">🗺️ 동선 최적화</span>
-      <span class="badge">🍽️ 맛집 추천</span>
-      <span class="badge">🏨 숙소 연결</span>
-      <span class="badge">✨ MBTI 맞춤</span>
+      <span class="badge">🗺️ <span data-i18n="b1">동선 최적화</span></span>
+      <span class="badge">🎯 MBTI</span>
+      <span class="badge">🍽️ <span data-i18n="b2">맛집 추천</span></span>
+      <span class="badge">🆓 <span data-i18n="b3">무료</span></span>
     </div>
-
-    <button class="btn-main" onclick="goInput()">여행 플랜 만들기 →</button>
+    <button class="btn-main" onclick="goPage('p-input')" data-i18n="startBtn">여행 플랜 만들기 →</button>
   </div>
 </div>
 
-<!-- ───────── PAGE 2: INPUT ───────── -->
+<!-- INPUT -->
 <div id="p-input" class="page">
   <div class="top-bar">
     <button class="back-btn" onclick="goPage('p-intro')">←</button>
-    <span class="top-bar-title">여행 정보 입력</span>
-    <span class="top-bar-step">1/1</span>
+    <span class="top-title" data-i18n="inputTitle">여행 정보 입력</span>
+    <span class="top-step">1/1</span>
   </div>
-  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
-
+  <div class="prog"><div class="prog-fill" id="progress" style="width:0%"></div></div>
   <div class="input-body">
-
-    <!-- 여행 지역 -->
-    <div class="section-label">여행 지역</div>
-    <div class="q-title">어디로 여행을 떠나시나요?</div>
+    <div class="sec-lbl" data-i18n="regionLabel">여행 지역</div>
+    <div class="q-title" data-i18n="regionQ">어디로 여행을 떠나시나요?</div>
     <div class="chip-grid" id="region-chips">
-      <div class="chip" onclick="selectOne(this,'region')">서울</div>
-      <div class="chip" onclick="selectOne(this,'region')">부산</div>
-      <div class="chip" onclick="selectOne(this,'region')">제주</div>
-      <div class="chip" onclick="selectOne(this,'region')">강릉</div>
-      <div class="chip" onclick="selectOne(this,'region')">경주</div>
-      <div class="chip" onclick="selectOne(this,'region')">여수</div>
-      <div class="chip" onclick="selectOne(this,'region')">전주</div>
-      <div class="chip" onclick="selectOne(this,'region')">속초</div>
+      <div class="chip" onclick="pick(this,'region','서울')">서울</div>
+      <div class="chip" onclick="pick(this,'region','부산')">부산</div>
+      <div class="chip" onclick="pick(this,'region','제주')">제주</div>
+      <div class="chip" onclick="pick(this,'region','강릉')">강릉</div>
+      <div class="chip" onclick="pick(this,'region','경주')">경주</div>
+      <div class="chip" onclick="pick(this,'region','여수')">여수</div>
+      <div class="chip" onclick="pick(this,'region','전주')">전주</div>
+      <div class="chip" onclick="pick(this,'region','속초')">속초</div>
     </div>
-
     <div class="divider"></div>
-
-    <!-- 여행 기간 -->
-    <div class="section-label">여행 날짜</div>
-    <div class="q-title">언제 여행을 가시나요?</div>
+    <div class="sec-lbl" data-i18n="dateLabel">여행 날짜</div>
+    <div class="q-title" data-i18n="dateQ">언제 여행을 가시나요?</div>
     <div class="date-row">
-      <div class="date-field">
-        <label>출발일</label>
-        <input type="date" id="date-start" onchange="updateProgress()"/>
-      </div>
-      <div class="date-field">
-        <label>귀가일</label>
-        <input type="date" id="date-end" onchange="updateProgress()"/>
-      </div>
+      <div class="date-field"><label data-i18n="startDate">출발일</label><input type="date" id="date-start" onchange="calcProgress()"/></div>
+      <div class="date-field"><label data-i18n="endDate">귀가일</label><input type="date" id="date-end" onchange="calcProgress()"/></div>
     </div>
-
     <div class="divider"></div>
-
-    <!-- 동행 -->
-    <div class="section-label">누구와 함께</div>
-    <div class="q-title">누구와 여행하시나요?</div>
-    <div class="chip-grid col3" id="with-chips">
-      <div class="chip" onclick="selectOne(this,'with')">🙋 혼자</div>
-      <div class="chip" onclick="selectOne(this,'with')">💑 커플</div>
-      <div class="chip" onclick="selectOne(this,'with')">👫 친구</div>
-      <div class="chip" onclick="selectOne(this,'with')">👨‍👩‍👧 가족</div>
-      <div class="chip" onclick="selectOne(this,'with')">👶 아이와</div>
-      <div class="chip" onclick="selectOne(this,'with')">🐾 반려동물</div>
+    <div class="sec-lbl" data-i18n="withLabel">누구와 함께</div>
+    <div class="q-title" data-i18n="withQ">누구와 여행하시나요?</div>
+    <div class="chip-grid c3" id="with-chips">
+      <div class="chip" onclick="pick(this,'with','solo')" data-ik="with.solo">🙋 혼자</div>
+      <div class="chip" onclick="pick(this,'with','couple')" data-ik="with.couple">💑 커플</div>
+      <div class="chip" onclick="pick(this,'with','friends')" data-ik="with.friends">👫 친구</div>
+      <div class="chip" onclick="pick(this,'with','family')" data-ik="with.family">👨‍👩‍👧 가족</div>
+      <div class="chip" onclick="pick(this,'with','kids')" data-ik="with.kids">👶 아이와</div>
+      <div class="chip" onclick="pick(this,'with','pet')" data-ik="with.pet">🐾 반려동물</div>
     </div>
-
     <div class="divider"></div>
-
-    <!-- 여행 스타일 -->
-    <div class="section-label">여행 스타일 (복수 선택)</div>
-    <div class="q-title">어떤 여행을 원하시나요?</div>
+    <div class="sec-lbl" data-i18n="styleLabel">여행 스타일 (복수 선택)</div>
+    <div class="q-title" data-i18n="styleQ">어떤 여행을 원하시나요?</div>
     <div class="chip-grid" id="style-chips">
-      <div class="chip multi" onclick="toggleChip(this)">🍽️ 맛집</div>
-      <div class="chip multi" onclick="toggleChip(this)">☕ 카페</div>
-      <div class="chip multi" onclick="toggleChip(this)">🌿 힐링</div>
-      <div class="chip multi" onclick="toggleChip(this)">📸 사진</div>
-      <div class="chip multi" onclick="toggleChip(this)">🏃 액티비티</div>
-      <div class="chip multi" onclick="toggleChip(this)">🏛️ 역사</div>
-      <div class="chip multi" onclick="toggleChip(this)">🛍️ 쇼핑</div>
-      <div class="chip multi" onclick="toggleChip(this)">🌊 자연</div>
+      <div class="chip multi" onclick="tog(this)" data-style="food">🍽️ <span data-ik="s.food">맛집</span></div>
+      <div class="chip multi" onclick="tog(this)" data-style="cafe">☕ <span data-ik="s.cafe">카페</span></div>
+      <div class="chip multi" onclick="tog(this)" data-style="healing">🌿 <span data-ik="s.healing">힐링</span></div>
+      <div class="chip multi" onclick="tog(this)" data-style="photo">📸 <span data-ik="s.photo">사진</span></div>
+      <div class="chip multi" onclick="tog(this)" data-style="activity">🏃 <span data-ik="s.activity">액티비티</span></div>
+      <div class="chip multi" onclick="tog(this)" data-style="history">🏛️ <span data-ik="s.history">역사</span></div>
+      <div class="chip multi" onclick="tog(this)" data-style="shopping">🛍️ <span data-ik="s.shopping">쇼핑</span></div>
+      <div class="chip multi" onclick="tog(this)" data-style="nature">🌊 <span data-ik="s.nature">자연</span></div>
     </div>
-
     <div class="divider"></div>
-
-    <!-- 이동수단 -->
-    <div class="section-label">이동수단</div>
-    <div class="q-title">주로 어떻게 이동하실 건가요?</div>
-    <div class="chip-grid col2" id="transport-chips">
-      <div class="chip" onclick="selectOne(this,'transport')">🚇 대중교통</div>
-      <div class="chip" onclick="selectOne(this,'transport')">🚗 자차</div>
-      <div class="chip" onclick="selectOne(this,'transport')">🚕 택시</div>
-      <div class="chip" onclick="selectOne(this,'transport')">🚶 도보</div>
+    <div class="sec-lbl" data-i18n="transportLabel">이동수단</div>
+    <div class="q-title" data-i18n="transportQ">주로 어떻게 이동하실 건가요?</div>
+    <div class="chip-grid c2" id="transport-chips">
+      <div class="chip" onclick="pick(this,'transport','public')" data-ik="tr.public">🚇 대중교통</div>
+      <div class="chip" onclick="pick(this,'transport','car')" data-ik="tr.car">🚗 자차</div>
+      <div class="chip" onclick="pick(this,'transport','taxi')" data-ik="tr.taxi">🚕 택시</div>
+      <div class="chip" onclick="pick(this,'transport','walk')" data-ik="tr.walk">🚶 도보</div>
     </div>
-
     <div class="divider"></div>
-
-    <!-- 나이대 -->
-    <div class="section-label">나이대</div>
-    <select class="native" id="age-sel" onchange="updateProgress()">
-      <option value="">나이대를 선택하세요</option>
-      <option>10대</option>
-      <option>20대</option>
-      <option>30대</option>
-      <option>40대</option>
-      <option>50대 이상</option>
+    <div class="sec-lbl" data-i18n="ageLabel">나이대</div>
+    <select class="native-sel" id="age-sel" onchange="calcProgress()">
+      <option value="" data-i18n="agePh">나이대를 선택하세요</option>
+      <option value="10">10대</option><option value="20">20대</option>
+      <option value="30">30대</option><option value="40">40대</option><option value="50">50대 이상</option>
     </select>
-
-    <div style="margin-top:14px"></div>
-
-    <!-- MBTI -->
-    <div class="section-label">MBTI</div>
-    <select class="native" id="mbti-sel" onchange="updateProgress()">
-      <option value="">MBTI를 선택하세요</option>
-      <option>ENFP</option><option>ENFJ</option>
-      <option>ENTP</option><option>ENTJ</option>
-      <option>ESFP</option><option>ESFJ</option>
-      <option>ESTP</option><option>ESTJ</option>
-      <option>INFP</option><option>INFJ</option>
-      <option>INTP</option><option>INTJ</option>
-      <option>ISFP</option><option>ISFJ</option>
-      <option>ISTP</option><option>ISTJ</option>
+    <div style="margin-top:12px"></div>
+    <div class="sec-lbl">MBTI</div>
+    <select class="native-sel" id="mbti-sel" onchange="calcProgress()">
+      <option value="" data-i18n="mbtiPh">MBTI를 선택하세요</option>
+      <option>ENFP</option><option>ENFJ</option><option>ENTP</option><option>ENTJ</option>
+      <option>ESFP</option><option>ESFJ</option><option>ESTP</option><option>ESTJ</option>
+      <option>INFP</option><option>INFJ</option><option>INTP</option><option>INTJ</option>
+      <option>ISFP</option><option>ISFJ</option><option>ISTP</option><option>ISTJ</option>
     </select>
-
     <div class="divider"></div>
-
-    <!-- 예산 -->
-    <div class="section-label">여행 예산</div>
-    <div class="q-title">1인 기준 예산은 얼마인가요?</div>
-    <div class="chip-grid col3" id="budget-chips">
-      <div class="chip" onclick="selectOne(this,'budget')">💸 절약<br/><small style="font-weight:400;font-size:11px">10만원 이하</small></div>
-      <div class="chip" onclick="selectOne(this,'budget')">💰 보통<br/><small style="font-weight:400;font-size:11px">30만원대</small></div>
-      <div class="chip" onclick="selectOne(this,'budget')">💎 여유<br/><small style="font-weight:400;font-size:11px">50만원 이상</small></div>
+    <div class="sec-lbl" data-i18n="budgetLabel">여행 예산</div>
+    <div class="q-title" data-i18n="budgetQ">1인 기준 예산은 얼마인가요?</div>
+    <div class="chip-grid c3" id="budget-chips">
+      <div class="chip" onclick="pick(this,'budget','save')">💸 <span data-ik="bg.save">절약</span><br/><small style="font-weight:400;font-size:11px">~10만원</small></div>
+      <div class="chip" onclick="pick(this,'budget','normal')">💰 <span data-ik="bg.normal">보통</span><br/><small style="font-weight:400;font-size:11px">~30만원</small></div>
+      <div class="chip" onclick="pick(this,'budget','luxury')">💎 <span data-ik="bg.luxury">여유</span><br/><small style="font-weight:400;font-size:11px">50만원+</small></div>
     </div>
-
-    <button class="btn-primary" onclick="makeplan()">✨ 나만의 여행 플랜 만들기</button>
+    <button class="btn-primary" onclick="makePlan()" data-i18n="makeBtn">✨ 나만의 여행 플랜 만들기</button>
   </div>
 </div>
 
-<!-- ───────── LOADING ───────── -->
+<!-- LOADING -->
 <div id="p-loading" class="page">
-  <div class="loading-inner" style="padding:40px 24px; max-width:360px; margin:0 auto;">
+  <div style="padding:40px 24px;max-width:360px;margin:0 auto;text-align:center">
     <div class="spinner"></div>
-    <div class="loading-title">🧭 일정을 만들고 있어요</div>
-    <div class="loading-desc">입력한 취향과 동선을 분석해서<br/>나만의 여행 플랜을 구성하고 있어요.</div>
-    <div class="loading-steps" id="loading-steps">
-      <div class="loading-step"><span class="step-icon">📍</span> 지역 장소 데이터 수집 중...</div>
-      <div class="loading-step"><span class="step-icon">🗺️</span> 동선 최적화 계산 중...</div>
-      <div class="loading-step"><span class="step-icon">🍽️</span> 맛집 & 카페 매칭 중...</div>
-      <div class="loading-step"><span class="step-icon">🏨</span> 숙소 추천 연결 중...</div>
+    <div class="ld-title" data-i18n="ldTitle">일정을 만들고 있어요</div>
+    <div class="ld-desc" data-i18n="ldDesc">입력한 취향과 동선을 분석해서 나만의 여행 플랜을 구성하고 있어요.</div>
+    <div class="ld-steps" id="ld-steps">
+      <div class="ld-step">📍 <span data-i18n="ls1">지역 장소 데이터 수집 중...</span></div>
+      <div class="ld-step">🗺️ <span data-i18n="ls2">동선 최적화 계산 중...</span></div>
+      <div class="ld-step">🍽️ <span data-i18n="ls3">블루리본 맛집 매칭 중...</span></div>
+      <div class="ld-step">🏨 <span data-i18n="ls4">숙소 기준 경로 설정 중...</span></div>
     </div>
   </div>
 </div>
 
-<!-- ───────── PAGE 3: RESULT ───────── -->
+<!-- RESULT -->
 <div id="p-result" class="page">
-
   <div class="result-hero">
-    <div class="result-badge">✨ 플렌K 추천 플랜</div>
-    <div class="result-title" id="result-title">서울 2박 3일 여행</div>
-    <div class="result-sub" id="result-sub">감성 맛집 + 카페 + 야경 코스</div>
-    <div class="result-tags" id="result-tags">
-      <span class="result-tag">🚇 대중교통</span>
-      <span class="result-tag">💑 커플 여행</span>
-      <span class="result-tag">🍽️ 맛집 중심</span>
-    </div>
+    <div class="result-badge" data-i18n="resultBadge">✨ 플렌K 추천 플랜</div>
+    <div class="result-title" id="r-title">서울 2박 3일 여행</div>
+    <div class="result-sub" id="r-sub">감성 맛집 + 카페 코스</div>
+    <div class="result-tags" id="r-tags"></div>
   </div>
-
-  <div class="result-body has-nav">
-
-    <!-- 요약 카드 -->
-    <div class="summary-card" style="margin-top:20px;">
-      <div class="summary-item"><label>여행 지역</label><span id="r-region">서울</span></div>
-      <div class="summary-item"><label>여행 기간</label><span id="r-period">2박 3일</span></div>
-      <div class="summary-item"><label>여행 스타일</label><span id="r-style">감성 / 맛집</span></div>
-      <div class="summary-item"><label>이동수단</label><span id="r-transport">대중교통</span></div>
+  <div class="result-body">
+    <div class="sum-card" style="margin-top:16px">
+      <div class="sum-item"><label data-i18n="sumRegion">여행 지역</label><span id="r-region">-</span></div>
+      <div class="sum-item"><label data-i18n="sumPeriod">여행 기간</label><span id="r-period">-</span></div>
+      <div class="sum-item"><label data-i18n="sumStyle">여행 스타일</label><span id="r-style">-</span></div>
+      <div class="sum-item"><label data-i18n="sumTransport">이동수단</label><span id="r-transport">-</span></div>
     </div>
-
-    <!-- DAY 1 -->
-    <div class="day-card">
-      <div class="day-header">
-        DAY 1 <span class="day-header-sub">종로·익선동 코스</span>
+    <div class="map-section">
+      <div class="map-header" onclick="toggleMap()">
+        <div class="map-header-title">🗺️ <span data-i18n="mapTitle">동선 지도 (숙소 기준)</span></div>
+        <button class="map-toggle-btn" id="map-toggle-btn" data-i18n="mapShow">지도 보기</button>
       </div>
-
-      <div class="place-item" onclick="showToast('경복궁 상세 정보')">
-        <div class="time-col">10:00</div>
-        <div class="place-thumb">🏯</div>
-        <div class="place-info">
-          <span class="place-cat">관광</span>
-          <div class="place-name">경복궁</div>
-          <div class="place-meta">서울 종로구 · 예상 1시간 30분<br/>가까운 역: 경복궁역 3번 출구</div>
-        </div>
-      </div>
-      <div class="arrow-row">
-        <span class="arrow-dot">↓</span>
-        <span class="arrow-info">도보 <b>10분</b></span>
-      </div>
-
-      <div class="place-item" onclick="showToast('북촌한옥마을 상세 정보')">
-        <div class="time-col">12:00</div>
-        <div class="place-thumb">🏘️</div>
-        <div class="place-info">
-          <span class="place-cat">사진 명소</span>
-          <div class="place-name">북촌한옥마을</div>
-          <div class="place-meta">서울 종로구 · 예상 1시간<br/>포토스팟 · 한복 체험 가능</div>
-        </div>
-      </div>
-      <div class="arrow-row">
-        <span class="arrow-dot">↓</span>
-        <span class="arrow-info">도보 <b>5분</b></span>
-      </div>
-
-      <div class="place-item" onclick="showToast('익선동 맛집 상세 정보')">
-        <div class="time-col">13:30</div>
-        <div class="place-thumb">🍜</div>
-        <div class="place-info">
-          <span class="place-cat">맛집</span>
-          <div class="place-name">익선동 한식 맛집</div>
-          <div class="place-meta">익선동 골목 · 1인 15,000원대<br/>데이트 코스 추천 · 웨이팅 있음</div>
-        </div>
-      </div>
-      <div class="arrow-row">
-        <span class="arrow-dot">↓</span>
-        <span class="arrow-info">도보 <b>3분</b></span>
-      </div>
-
-      <div class="place-item" onclick="showToast('감성 카페 상세 정보')">
-        <div class="time-col">15:00</div>
-        <div class="place-thumb">☕</div>
-        <div class="place-info">
-          <span class="place-cat">카페</span>
-          <div class="place-name">익선동 감성 카페</div>
-          <div class="place-meta">한옥 분위기 · 사진 찍기 좋음<br/>아메리카노 6,000원대</div>
-        </div>
-      </div>
-      <div class="arrow-row">
-        <span class="arrow-dot">↓</span>
-        <span class="arrow-info">지하철 <b>25분</b> · 4호선</span>
-      </div>
-
-      <div class="place-item" onclick="showToast('남산서울타워 상세 정보')">
-        <div class="time-col">17:00</div>
-        <div class="place-thumb">🗼</div>
-        <div class="place-info">
-          <span class="place-cat">야경 명소</span>
-          <div class="place-name">남산서울타워</div>
-          <div class="place-meta">서울 중구 · 야경 포인트<br/>케이블카 이용 추천</div>
-        </div>
-      </div>
-      <div class="arrow-row">
-        <span class="arrow-dot">↓</span>
-        <span class="arrow-info">택시 <b>15분</b> · 약 9,000원</span>
-      </div>
-
-      <div class="place-item" onclick="showToast('명동 저녁식사 상세 정보')">
-        <div class="time-col">19:00</div>
-        <div class="place-thumb">🍖</div>
-        <div class="place-info">
-          <span class="place-cat">저녁 식사</span>
-          <div class="place-name">명동 저녁식사</div>
-          <div class="place-meta">명동거리 · 삼겹살 / 곱창 추천<br/>1인 20,000원대</div>
-        </div>
-      </div>
+      <div id="plan-map"></div>
     </div>
-
-    <!-- DAY 2 -->
-    <div class="day-card">
-      <div class="day-header">
-        DAY 2 <span class="day-header-sub">성수·한강 코스</span>
-      </div>
-
-      <div class="place-item" onclick="showToast('성수동 카페거리 상세 정보')">
-        <div class="time-col">10:00</div>
-        <div class="place-thumb">🏭</div>
-        <div class="place-info">
-          <span class="place-cat">카페</span>
-          <div class="place-name">성수동 카페거리</div>
-          <div class="place-meta">서울 성동구 · 인스타 감성<br/>카페 투어 1~2시간</div>
-        </div>
-      </div>
-      <div class="arrow-row">
-        <span class="arrow-dot">↓</span>
-        <span class="arrow-info">도보 <b>15분</b></span>
-      </div>
-
-      <div class="place-item" onclick="showToast('서울숲 상세 정보')">
-        <div class="time-col">12:00</div>
-        <div class="place-thumb">🌳</div>
-        <div class="place-info">
-          <span class="place-cat">자연</span>
-          <div class="place-name">서울숲 산책</div>
-          <div class="place-meta">반려동물 동반 가능 · 무료입장<br/>피크닉 추천 코스</div>
-        </div>
-      </div>
-      <div class="arrow-row">
-        <span class="arrow-dot">↓</span>
-        <span class="arrow-info">도보 <b>5분</b></span>
-      </div>
-
-      <div class="place-item" onclick="showToast('성수 맛집 상세 정보')">
-        <div class="time-col">13:30</div>
-        <div class="place-thumb">🍔</div>
-        <div class="place-info">
-          <span class="place-cat">맛집</span>
-          <div class="place-name">성수 브런치 맛집</div>
-          <div class="place-meta">1인 18,000원대 · SNS 인기<br/>웨이팅 예약 추천</div>
-        </div>
-      </div>
-      <div class="arrow-row">
-        <span class="arrow-dot">↓</span>
-        <span class="arrow-info">지하철 <b>20분</b></span>
-      </div>
-
-      <div class="place-item" onclick="showToast('한강공원 상세 정보')">
-        <div class="time-col">16:00</div>
-        <div class="place-thumb">🌅</div>
-        <div class="place-info">
-          <span class="place-cat">힐링</span>
-          <div class="place-name">한강공원</div>
-          <div class="place-meta">뚝섬 또는 반포 한강공원<br/>치킨 + 한강뷰 추천</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 추천 동선 -->
-    <div class="route-card">
-      <div class="route-title">📍 오늘의 추천 동선</div>
-      <div class="route-flow">
-        <span class="route-node">경복궁</span>
-        <span class="route-arrow">→</span>
-        <span class="route-node">북촌</span>
-        <span class="route-arrow">→</span>
-        <span class="route-node">익선동</span>
-        <span class="route-arrow">→</span>
-        <span class="route-node">남산</span>
-        <span class="route-arrow">→</span>
-        <span class="route-node">명동</span>
-      </div>
-    </div>
-
-    <!-- 액션 버튼 -->
+    <div id="itinerary-container"></div>
     <div class="action-row">
-      <button class="action-btn primary" onclick="showToast('일정이 저장되었습니다.')">💾 저장</button>
-      <button class="action-btn out" onclick="goInput()">🔄 다시 만들기</button>
-      <button class="action-btn gray" onclick="showToast('공유 링크가 복사되었습니다.')">🔗 공유</button>
+      <button class="action-btn primary" onclick="showToast(t('toastSaved'))" data-i18n="saveBtn">💾 저장</button>
+      <button class="action-btn out" onclick="goPage('p-input')" data-i18n="remakeBtn">🔄 다시 만들기</button>
+      <button class="action-btn gray" onclick="showToast(t('toastShared'))" data-i18n="shareBtn">🔗 공유</button>
     </div>
-
+    <nav class="bottom-nav">
+      <button class="nav-item" onclick="goPage('p-intro')"><span class="icon">🏠</span><span data-i18n="navHome">홈</span></button>
+      <button class="nav-item active"><span class="icon">✈️</span><span data-i18n="navPlan">플랜</span></button>
+      <button class="nav-item" onclick="showToast(t('noSaved'))"><span class="icon">📋</span><span data-i18n="navSaved">저장</span></button>
+      <button class="nav-item" onclick="showToast(t('myPageSoon'))"><span class="icon">👤</span><span data-i18n="navMy">마이페이지</span></button>
+    </nav>
   </div>
-
-  <!-- 하단 내비 -->
-  <nav class="bottom-nav">
-    <button class="nav-item" onclick="goPage('p-intro')"><span class="icon">🏠</span>홈</button>
-    <button class="nav-item active"><span class="icon">✈️</span>플랜</button>
-    <button class="nav-item" onclick="showToast('저장한 플랜이 없습니다.')"><span class="icon">📋</span>저장</button>
-    <button class="nav-item" onclick="showToast('마이페이지 준비 중입니다.')"><span class="icon">👤</span>마이페이지</button>
-  </nav>
 </div>
 
-<!-- Toast -->
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal-box">
+    <div class="modal-title" data-i18n="editTitle">일정 수정</div>
+    <div class="modal-field"><label data-i18n="editTime">시간</label><input type="time" id="edit-time"/></div>
+    <div class="modal-field"><label data-i18n="editPlace">장소 이름</label><input type="text" id="edit-name"/></div>
+    <div class="modal-field"><label data-i18n="editNote">메모</label><textarea id="edit-note"></textarea></div>
+    <div class="modal-btns">
+      <button class="modal-btn save" onclick="saveEdit()" data-i18n="editSave">저장</button>
+      <button class="modal-btn del" onclick="deleteItem()" data-i18n="editDelete">삭제</button>
+      <button class="modal-btn cancel" onclick="closeModal()" data-i18n="editCancel">취소</button>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// ── 선택 상태 저장
-const state = { region:'', with:'', transport:'', budget:'' };
+// ── i18n ─────────────────────────────────────────────────
+const I18N={
+ko:{tagline:'나에게 딱 맞는 한국 여행 플랜',introDesc:'취향, 일정, 동선까지 고려해서 나만의 여행 코스를 만들어드려요.',b1:'동선 최적화',b2:'맛집 추천',b3:'무료',startBtn:'여행 플랜 만들기 →',inputTitle:'여행 정보 입력',regionLabel:'여행 지역',regionQ:'어디로 여행을 떠나시나요?',dateLabel:'여행 날짜',dateQ:'언제 여행을 가시나요?',startDate:'출발일',endDate:'귀가일',withLabel:'누구와 함께',withQ:'누구와 여행하시나요?',styleLabel:'여행 스타일 (복수 선택)',styleQ:'어떤 여행을 원하시나요?',transportLabel:'이동수단',transportQ:'주로 어떻게 이동하실 건가요?',ageLabel:'나이대',agePh:'나이대를 선택하세요',mbtiPh:'MBTI를 선택하세요',budgetLabel:'여행 예산',budgetQ:'1인 기준 예산은 얼마인가요?',makeBtn:'✨ 나만의 여행 플랜 만들기',ldTitle:'일정을 만들고 있어요',ldDesc:'입력한 취향과 동선을 분석해서 나만의 여행 플랜을 구성하고 있어요.',ls1:'지역 장소 데이터 수집 중...',ls2:'동선 최적화 계산 중...',ls3:'블루리본 맛집 매칭 중...',ls4:'숙소 기준 경로 설정 중...',resultBadge:'✨ 플렌K 추천 플랜',sumRegion:'여행 지역',sumPeriod:'여행 기간',sumStyle:'여행 스타일',sumTransport:'이동수단',mapTitle:'동선 지도 (숙소 기준)',mapShow:'지도 보기',mapHide:'지도 숨기기',editTitle:'일정 수정',editTime:'시간',editPlace:'장소 이름',editNote:'메모',editSave:'저장',editDelete:'삭제',editCancel:'취소',saveBtn:'💾 저장',remakeBtn:'🔄 다시 만들기',shareBtn:'🔗 공유',navHome:'홈',navPlan:'플랜',navSaved:'저장',navMy:'마이페이지',toastSaved:'일정이 저장되었습니다.',toastShared:'공유 링크가 복사되었습니다.',toastRegion:'여행 지역을 선택해주세요.',toastDate:'출발일을 선택해주세요.',noSaved:'저장한 플랜이 없습니다.',myPageSoon:'마이페이지 준비 중입니다.','with.solo':'🙋 혼자','with.couple':'💑 커플','with.friends':'👫 친구','with.family':'👨‍👩‍👧 가족','with.kids':'👶 아이와','with.pet':'🐾 반려동물','tr.public':'🚇 대중교통','tr.car':'🚗 자차','tr.taxi':'🚕 택시','tr.walk':'🚶 도보','bg.save':'절약','bg.normal':'보통','bg.luxury':'여유','s.food':'맛집','s.cafe':'카페','s.healing':'힐링','s.photo':'사진','s.activity':'액티비티','s.history':'역사','s.shopping':'쇼핑','s.nature':'자연',cat_sight:'관광',cat_restaurant:'맛집',cat_cafe:'카페',cat_nature:'자연',ribbon:'블루리본',hotel:'숙소',dayLabel:'DAY',backToHotel:'숙소 복귀',routeTitle:'추천 동선'},
+en:{tagline:'Korea Travel Plans, Made Just for You',introDesc:'Input your preferences and get a personalized itinerary with optimized routes.',b1:'Route Optimized',b2:'Top Restaurants',b3:'Free',startBtn:'Create My Travel Plan →',inputTitle:'Travel Info',regionLabel:'Destination',regionQ:'Where would you like to travel?',dateLabel:'Dates',dateQ:'When are you traveling?',startDate:'Departure',endDate:'Return',withLabel:'Travel With',withQ:'Who are you traveling with?',styleLabel:'Travel Style (Multiple)',styleQ:'What kind of trip do you want?',transportLabel:'Transport',transportQ:'How will you get around?',ageLabel:'Age Group',agePh:'Select age group',mbtiPh:'Select MBTI',budgetLabel:'Budget',budgetQ:'Budget per person?',makeBtn:'✨ Create My Travel Plan',ldTitle:'Building Your Itinerary...',ldDesc:'Analyzing your preferences and optimizing routes.',ls1:'Collecting local place data...',ls2:'Optimizing routes...',ls3:'Matching Blue Ribbon restaurants...',ls4:'Setting hotel-based route...',resultBadge:'✨ PlanK Recommended',sumRegion:'Destination',sumPeriod:'Duration',sumStyle:'Style',sumTransport:'Transport',mapTitle:'Route Map (from hotel)',mapShow:'Show Map',mapHide:'Hide Map',editTitle:'Edit Schedule',editTime:'Time',editPlace:'Place Name',editNote:'Note',editSave:'Save',editDelete:'Delete',editCancel:'Cancel',saveBtn:'💾 Save',remakeBtn:'🔄 Redo',shareBtn:'🔗 Share',navHome:'Home',navPlan:'Plan',navSaved:'Saved',navMy:'My Page',toastSaved:'Itinerary saved!',toastShared:'Link copied!',toastRegion:'Please select a destination.',toastDate:'Please select a departure date.',noSaved:'No saved plans.',myPageSoon:'My Page coming soon.','with.solo':'🙋 Solo','with.couple':'💑 Couple','with.friends':'👫 Friends','with.family':'👨‍👩‍👧 Family','with.kids':'👶 With Kids','with.pet':'🐾 With Pet','tr.public':'🚇 Public Transit','tr.car':'🚗 Car','tr.taxi':'🚕 Taxi','tr.walk':'🚶 Walk','bg.save':'Budget','bg.normal':'Moderate','bg.luxury':'Luxury','s.food':'Food','s.cafe':'Cafe','s.healing':'Healing','s.photo':'Photo','s.activity':'Activity','s.history':'History','s.shopping':'Shopping','s.nature':'Nature',cat_sight:'Sightseeing',cat_restaurant:'Restaurant',cat_cafe:'Cafe',cat_nature:'Nature',ribbon:'Blue Ribbon',hotel:'Hotel',dayLabel:'DAY',backToHotel:'Back to Hotel',routeTitle:'Route'},
+zh:{tagline:'专为您定制的韩国旅行计划',introDesc:'输入偏好，获取包含最优路线的个性化行程。',b1:'路线优化',b2:'美食推荐',b3:'免费',startBtn:'创建我的旅行计划 →',inputTitle:'旅行信息',regionLabel:'旅行地区',regionQ:'您想去哪里旅行？',dateLabel:'旅行日期',dateQ:'您什么时候出发？',startDate:'出发日',endDate:'返回日',withLabel:'同行人员',withQ:'和谁一起旅行？',styleLabel:'旅行风格 (可多选)',styleQ:'您想要什么样的旅行？',transportLabel:'交通方式',transportQ:'您主要怎么出行？',ageLabel:'年龄段',agePh:'请选择年龄段',mbtiPh:'请选择MBTI',budgetLabel:'旅行预算',budgetQ:'人均预算是多少？',makeBtn:'✨ 创建我的旅行计划',ldTitle:'正在制作行程...',ldDesc:'正在分析您的喜好并优化动线。',ls1:'收集当地景点数据...',ls2:'优化路线...',ls3:'匹配蓝丝带餐厅...',ls4:'设置酒店出发路线...',resultBadge:'✨ 旅K推荐计划',sumRegion:'旅行地区',sumPeriod:'旅行天数',sumStyle:'旅行风格',sumTransport:'交通方式',mapTitle:'路线地图 (以酒店为基准)',mapShow:'查看地图',mapHide:'隐藏地图',editTitle:'编辑行程',editTime:'时间',editPlace:'地点名称',editNote:'备注',editSave:'保存',editDelete:'删除',editCancel:'取消',saveBtn:'💾 保存',remakeBtn:'🔄 重新制作',shareBtn:'🔗 分享',navHome:'首页',navPlan:'计划',navSaved:'已保存',navMy:'我的',toastSaved:'行程已保存！',toastShared:'链接已复制！',toastRegion:'请选择旅行地区。',toastDate:'请选择出发日期。',noSaved:'没有保存的计划。',myPageSoon:'我的页面即将推出。','with.solo':'🙋 独行','with.couple':'💑 情侣','with.friends':'👫 朋友','with.family':'👨‍👩‍👧 家庭','with.kids':'👶 带孩子','with.pet':'🐾 带宠物','tr.public':'🚇 公共交通','tr.car':'🚗 自驾','tr.taxi':'🚕 出租车','tr.walk':'🚶 步行','bg.save':'节约','bg.normal':'适中','bg.luxury':'豪华','s.food':'美食','s.cafe':'咖啡','s.healing':'疗愈','s.photo':'拍照','s.activity':'活动','s.history':'历史','s.shopping':'购物','s.nature':'自然',cat_sight:'观光',cat_restaurant:'餐厅',cat_cafe:'咖啡馆',cat_nature:'自然',ribbon:'蓝丝带',hotel:'酒店',dayLabel:'DAY',backToHotel:'返回酒店',routeTitle:'推荐路线'},
+ja:{tagline:'あなただけの韓国旅行プラン',introDesc:'好みを入力するだけで、ルート最適化された旅程を提案します。',b1:'ルート最適化',b2:'グルメ推薦',b3:'無料',startBtn:'旅行プランを作る →',inputTitle:'旅行情報入力',regionLabel:'旅行先',regionQ:'どこへ旅行しますか？',dateLabel:'旅行日程',dateQ:'いつ旅行しますか？',startDate:'出発日',endDate:'帰宅日',withLabel:'同行者',withQ:'誰と旅行しますか？',styleLabel:'旅行スタイル (複数選択)',styleQ:'どんな旅行がしたいですか？',transportLabel:'移動手段',transportQ:'主にどうやって移動しますか？',ageLabel:'年齢層',agePh:'年齢層を選択',mbtiPh:'MBTIを選択',budgetLabel:'旅行予算',budgetQ:'1人あたりの予算は？',makeBtn:'✨ 旅行プランを作る',ldTitle:'プランを作成中...',ldDesc:'入力した好みと移動ルートを分析しています。',ls1:'現地スポットデータ収集中...',ls2:'ルート最適化中...',ls3:'ブルーリボンレストラン検索中...',ls4:'ホテル基準ルート設定中...',resultBadge:'✨ プランK おすすめ',sumRegion:'旅行先',sumPeriod:'旅行期間',sumStyle:'スタイル',sumTransport:'移動手段',mapTitle:'ルートマップ (ホテル起点)',mapShow:'地図を表示',mapHide:'地図を隠す',editTitle:'スケジュール編集',editTime:'時間',editPlace:'場所名',editNote:'メモ',editSave:'保存',editDelete:'削除',editCancel:'キャンセル',saveBtn:'💾 保存',remakeBtn:'🔄 やり直す',shareBtn:'🔗 シェア',navHome:'ホーム',navPlan:'プラン',navSaved:'保存済み',navMy:'マイページ',toastSaved:'プランを保存しました！',toastShared:'リンクをコピーしました！',toastRegion:'旅行先を選択してください。',toastDate:'出発日を選択してください。',noSaved:'保存済みプランがありません。',myPageSoon:'マイページは近日公開。','with.solo':'🙋 一人旅','with.couple':'💑 カップル','with.friends':'👫 友達','with.family':'👨‍👩‍👧 家族','with.kids':'👶 子連れ','with.pet':'🐾 ペット連れ','tr.public':'🚇 公共交通','tr.car':'🚗 自家用車','tr.taxi':'🚕 タクシー','tr.walk':'🚶 徒歩','bg.save':'節約','bg.normal':'普通','bg.luxury':'ゆとり','s.food':'グルメ','s.cafe':'カフェ','s.healing':'癒し','s.photo':'写真','s.activity':'アクティビティ','s.history':'歴史','s.shopping':'ショッピング','s.nature':'自然',cat_sight:'観光',cat_restaurant:'レストラン',cat_cafe:'カフェ',cat_nature:'自然',ribbon:'ブルーリボン',hotel:'ホテル',dayLabel:'DAY',backToHotel:'ホテルへ戻る',routeTitle:'おすすめルート'}
+};
 
-function goPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
+// ── REGION DATA ───────────────────────────────────────────
+const RD={
+'서울':{en:'Seoul',zh:'首尔',ja:'ソウル',center:[37.5665,126.9780],hotel:{ko:'명동 글래드 호텔',en:'Glad Hotel Myeongdong',zh:'明洞格莱德酒店',ja:'グラッドホテル明洞',coords:[37.5635,126.9860]},days:[[
+{time:'10:00',icon:'🏯',cat:'sight',ko:'경복궁',en:'Gyeongbokgung',zh:'景福宫',ja:'景福宮',coords:[37.5796,126.9770],ribbon:0,desc:{ko:'조선 최대 궁궐 · 국보급 문화유산',en:'Joseon\'s grandest palace',zh:'朝鲜最大宫殿',ja:'朝鮮最大の宮殿'},move:{ko:'도보 10분',en:'Walk 10min',zh:'步行10分钟',ja:'徒歩10分'},mc:''},
+{time:'12:00',icon:'🏘️',cat:'sight',ko:'북촌한옥마을',en:'Bukchon Hanok Village',zh:'北村韩屋村',ja:'北村韓屋村',coords:[37.5826,126.9830],ribbon:0,desc:{ko:'700년 역사 한옥 사진 명소',en:'700yr hanok photo spot',zh:'700年韩屋拍照胜地',ja:'700年韓屋フォトスポット'},move:{ko:'도보 8분',en:'Walk 8min',zh:'步行8分钟',ja:'徒歩8分'},mc:''},
+{time:'13:30',icon:'🍜',cat:'restaurant',ko:'토속촌 삼계탕',en:'Tosokchon Samgyetang',zh:'土俗村参鸡汤',ja:'土俗村参鶏湯',coords:[37.5784,126.9717],ribbon:2,desc:{ko:'블루리본 ★★ · 대통령도 찾는 삼계탕 명가',en:'Blue Ribbon ★★ · Famous samgyetang',zh:'蓝丝带 ★★ · 参鸡汤名店',ja:'ブルーリボン ★★'},move:{ko:'지하철 20분',en:'Subway 20min',zh:'地铁20分钟',ja:'地下鉄20分'},mc:'1,400원'},
+{time:'15:30',icon:'☕',cat:'cafe',ko:'익선동 감성카페',en:'Ikseondong Cafe',zh:'益善洞感性咖啡',ja:'益善洞カフェ',coords:[37.5750,126.9998],ribbon:0,desc:{ko:'한옥 개조 감성 카페 거리',en:'Hanok-converted cafe street',zh:'韩屋改造咖啡街',ja:'韓屋改造カフェ通り'},move:{ko:'지하철 25분',en:'Subway 25min',zh:'地铁25分钟',ja:'地下鉄25分'},mc:'1,400원'},
+{time:'17:30',icon:'🗼',cat:'sight',ko:'남산서울타워',en:'N Seoul Tower',zh:'南山首尔塔',ja:'Nソウルタワー',coords:[37.5512,126.9882],ribbon:0,desc:{ko:'서울 360° 야경 명소 · 연인 자물쇠',en:'Seoul 360° night view',zh:'首尔360°夜景',ja:'ソウル360°夜景'},move:{ko:'택시 15분',en:'Taxi 15min',zh:'打车15分钟',ja:'タクシー15分'},mc:'9,000원'},
+{time:'19:30',icon:'🍖',cat:'restaurant',ko:'명동교자',en:'Myeongdong Kyoja',zh:'明洞饺子',ja:'明洞餃子',coords:[37.5635,126.9860],ribbon:1,desc:{ko:'블루리본 ★ · 70년 전통 칼국수·만두',en:'Blue Ribbon ★ · 70yr kalguksu',zh:'蓝丝带 ★ · 70年刀削面',ja:'ブルーリボン ★'},move:{ko:'숙소 도착',en:'Back to hotel',zh:'返回酒店',ja:'ホテルへ'},mc:''},
+],[
+{time:'10:00',icon:'🏭',cat:'cafe',ko:'성수동 카페거리',en:'Seongsu Cafe Street',zh:'圣水洞咖啡街',ja:'聖水洞カフェ通り',coords:[37.5443,127.0560],ribbon:0,desc:{ko:'공장 개조 인스타 핫플 카페',en:'Industrial-chic cafe hotspot',zh:'工厂改造网红咖啡',ja:'工場改造インスタ映えカフェ'},move:{ko:'도보 15분',en:'Walk 15min',zh:'步行15分钟',ja:'徒歩15分'},mc:''},
+{time:'12:00',icon:'🌳',cat:'nature',ko:'서울숲',en:'Seoul Forest',zh:'首尔林',ja:'ソウルの森',coords:[37.5447,127.0374],ribbon:0,desc:{ko:'도심 속 힐링 공원 · 사슴 방사장',en:'Urban park · deer area',zh:'市中心自然公园',ja:'都心の自然公園'},move:{ko:'도보 5분',en:'Walk 5min',zh:'步行5分钟',ja:'徒歩5分'},mc:''},
+{time:'13:30',icon:'🥩',cat:'restaurant',ko:'다미 왕갈비',en:'Dami Wang Galbi',zh:'Dami王排骨',ja:'ダミ王カルビ',coords:[37.5550,127.0430],ribbon:2,desc:{ko:'블루리본 ★★ · 성수 한우 명가',en:'Blue Ribbon ★★ · Premium Korean beef',zh:'蓝丝带 ★★ · 韩牛名店',ja:'ブルーリボン ★★'},move:{ko:'지하철 20분',en:'Subway 20min',zh:'地铁20分钟',ja:'地下鉄20分'},mc:'1,400원'},
+{time:'16:00',icon:'🌅',cat:'nature',ko:'한강공원 뚝섬',en:'Hangang Park',zh:'汉江公园',ja:'漢江公園',coords:[37.5300,127.0673],ribbon:0,desc:{ko:'치맥·한강뷰 · 서울 석양 포인트',en:'Chimaek & river sunset',zh:'炸鸡啤酒·汉江夕阳',ja:'チメク·漢江の夕日'},move:{ko:'숙소 이동',en:'Back to hotel',zh:'返回酒店',ja:'ホテルへ'},mc:''},
+]]},
+'부산':{en:'Busan',zh:'釜山',ja:'釜山',center:[35.1796,129.0756],hotel:{ko:'해운대 파라다이스 호텔',en:'Paradise Hotel Haeundae',zh:'海云台天堂大酒店',ja:'パラダイスホテル海雲台',coords:[35.1587,129.1604]},days:[[
+{time:'10:00',icon:'🌊',cat:'sight',ko:'해운대 해수욕장',en:'Haeundae Beach',zh:'海云台海水浴场',ja:'海雲台ビーチ',coords:[35.1587,129.1604],ribbon:0,desc:{ko:'부산 대표 1.8km 해변',en:'Busan\'s iconic 1.8km beach',zh:'釜山1.8km标志性海滩',ja:'釜山1.8kmのビーチ'},move:{ko:'버스 30분',en:'Bus 30min',zh:'公交30分钟',ja:'バス30分'},mc:'1,400원'},
+{time:'12:30',icon:'🥩',cat:'restaurant',ko:'해운대 암소갈비집',en:'Haeundae Amso Galbi',zh:'海云台牛排骨',ja:'海雲台アムソカルビ',coords:[35.1600,129.1550],ribbon:2,desc:{ko:'블루리본 ★★ · 30년 전통 암소갈비 명가',en:'Blue Ribbon ★★ · 30yr cow rib specialist',zh:'蓝丝带 ★★ · 30年传统母牛排骨',ja:'ブルーリボン ★★'},move:{ko:'지하철 25분',en:'Subway 25min',zh:'地铁25分钟',ja:'地下鉄25分'},mc:'1,400원'},
+{time:'14:30',icon:'🎨',cat:'sight',ko:'감천문화마을',en:'Gamcheon Culture Village',zh:'甘川文化村',ja:'甘川文化村',coords:[35.0975,129.0100],ribbon:0,desc:{ko:'부산의 마추픽추 · 형형색색 벽화마을',en:'Busan\'s Machu Picchu · colorful murals',zh:'釜山的马丘比丘·彩色壁画村',ja:'釜山のマチュピチュ'},move:{ko:'버스 20분',en:'Bus 20min',zh:'公交20分钟',ja:'バス20分'},mc:'1,400원'},
+{time:'17:30',icon:'🌉',cat:'sight',ko:'광안리 & 광안대교',en:'Gwangalli & Bridge',zh:'广安里及广安大桥',ja:'広安里&広安大橋',coords:[35.1533,129.1187],ribbon:0,desc:{ko:'광안대교 야경 명소 · 해변 카페',en:'Night view & beach cafes',zh:'广安大桥夜景·海边咖啡',ja:'夜景·海辺カフェ'},move:{ko:'지하철 20분',en:'Subway 20min',zh:'地铁20分钟',ja:'地下鉄20分'},mc:'1,400원'},
+{time:'19:30',icon:'🍜',cat:'restaurant',ko:'수변최씨밀면',en:'Subyeon Choi Milmyeon',zh:'水边崔氏密面',ja:'水辺チェ氏ミルミョン',coords:[35.1700,129.0600],ribbon:1,desc:{ko:'블루리본 ★ · 부산 밀면 원조',en:'Blue Ribbon ★ · Original Busan milmyeon',zh:'蓝丝带 ★ · 釜山密面始祖',ja:'ブルーリボン ★'},move:{ko:'숙소 이동',en:'Back to hotel',zh:'返回酒店',ja:'ホテルへ'},mc:''},
+]]},
+'제주':{en:'Jeju',zh:'济州',ja:'済州',center:[33.4996,126.5312],hotel:{ko:'제주시 감성 한옥 숙소',en:'Jeju Hanok Stay',zh:'济州感性韩屋住所',ja:'済州感性韓屋宿',coords:[33.5105,126.5220]},days:[[
+{time:'09:00',icon:'🌋',cat:'sight',ko:'성산일출봉',en:'Seongsan Ilchulbong',zh:'城山日出峰',ja:'城山日出峰',coords:[33.4586,126.9424],ribbon:0,desc:{ko:'유네스코 세계자연유산 · 해맞이 명소',en:'UNESCO World Heritage · sunrise spot',zh:'联合国教科文组织遗产·日出名所',ja:'ユネスコ世界遺産·日の出スポット'},move:{ko:'렌터카 30분',en:'Rental car 30min',zh:'租车30分钟',ja:'レンタカー30分'},mc:''},
+{time:'12:00',icon:'🐷',cat:'restaurant',ko:'돈사돈',en:'Donsadon Black Pork',zh:'Donsadon黑猪肉',ja:'ドンサドン黒豚',coords:[33.5105,126.5220],ribbon:2,desc:{ko:'블루리본 ★★ · 제주 흑돼지 대표 맛집',en:'Blue Ribbon ★★ · Jeju black pork',zh:'蓝丝带 ★★ · 济州黑猪肉代表餐厅',ja:'ブルーリボン ★★'},move:{ko:'렌터카 25분',en:'Rental car 25min',zh:'租车25分钟',ja:'レンタカー25分'},mc:''},
+{time:'14:30',icon:'🌿',cat:'nature',ko:'협재해수욕장',en:'Hyeopjae Beach',zh:'协才海水浴场',ja:'協在ビーチ',coords:[33.3942,126.2393],ribbon:0,desc:{ko:'에메랄드빛 제주 바다 · 비양도 조망',en:'Emerald sea · Biyangdo view',zh:'翡翠色海水·飞扬岛远眺',ja:'エメラルドの海·飛揚島眺望'},move:{ko:'렌터카 15분',en:'Rental car 15min',zh:'租车15分钟',ja:'レンタカー15分'},mc:''},
+{time:'17:00',icon:'☕',cat:'cafe',ko:'카페 신산리1924',en:'Cafe Sinsanri 1924',zh:'新山里1924咖啡馆',ja:'カフェ新山里1924',coords:[33.3800,126.2400],ribbon:0,desc:{ko:'제주 오션뷰 감성카페 · SNS 핫플',en:'Jeju ocean-view cafe hotspot',zh:'济州海景感性咖啡·网红打卡',ja:'済州オーシャンビューカフェ'},move:{ko:'렌터카 40분',en:'Rental car 40min',zh:'租车40分钟',ja:'レンタカー40分'},mc:''},
+{time:'19:30',icon:'🐟',cat:'restaurant',ko:'제주 옥돔식당',en:'Jeju Okdom Restaurant',zh:'济州玉鲷餐厅',ja:'済州玉鯛食堂',coords:[33.5043,126.5218],ribbon:1,desc:{ko:'블루리본 ★ · 제주 옥돔구이 전문',en:'Blue Ribbon ★ · Grilled Jeju okdom',zh:'蓝丝带 ★ · 济州烤玉鲷',ja:'ブルーリボン ★'},move:{ko:'숙소 이동',en:'Back to hotel',zh:'返回酒店',ja:'ホテルへ'},mc:''},
+]]},
+'강릉':{en:'Gangneung',zh:'江陵',ja:'江陵',center:[37.7519,128.8761],hotel:{ko:'강릉 경포 오션뷰 숙소',en:'Gangneung Gyeongpo Stay',zh:'江陵镜浦海景住所',ja:'江陵鏡浦オーシャンビュー宿',coords:[37.7960,128.9019]},days:[[
+{time:'09:00',icon:'☕',cat:'cafe',ko:'보헤미안 로스터스',en:'Bohemian Roasters',zh:'波西米亚咖啡',ja:'ボヘミアンロースターズ',coords:[37.7563,128.8936],ribbon:2,desc:{ko:'블루리본 ★★ · 강릉 커피 명가 · 국내 1호 스페셜티',en:'Blue Ribbon ★★ · Gangneung coffee legend',zh:'蓝丝带 ★★ · 江陵咖啡名店',ja:'ブルーリボン ★★'},move:{ko:'차 15분',en:'Car 15min',zh:'开车15分钟',ja:'車15分'},mc:''},
+{time:'11:00',icon:'🌊',cat:'sight',ko:'경포해변',en:'Gyeongpo Beach',zh:'镜浦海边',ja:'鏡浦海岸',coords:[37.7960,128.9019],ribbon:0,desc:{ko:'동해 대표 해변 · 일출 명소',en:'East Sea beach · sunrise spot',zh:'东海代表海滩·日出名所',ja:'東海の海岸·日の出スポット'},move:{ko:'차 10분',en:'Car 10min',zh:'开车10分钟',ja:'車10分'},mc:''},
+{time:'13:00',icon:'🍜',cat:'restaurant',ko:'교동반점',en:'Gyodong Banjeom',zh:'校洞饭店',ja:'校洞飯店',coords:[37.7500,128.8761],ribbon:1,desc:{ko:'블루리본 ★ · 짜장면 원조 · 80년 전통',en:'Blue Ribbon ★ · 80yr jjajangmyeon',zh:'蓝丝带 ★ · 炸酱面始祖·80年',ja:'ブルーリボン ★'},move:{ko:'차 20분',en:'Car 20min',zh:'开车20分钟',ja:'車20分'},mc:''},
+{time:'15:30',icon:'🌲',cat:'sight',ko:'오죽헌',en:'Ojukheon',zh:'乌竹轩',ja:'烏竹軒',coords:[37.7630,128.8761],ribbon:0,desc:{ko:'신사임당·율곡 이이 생가 · 5만원권 배경',en:'Historic home of Yulgok Yi',zh:'申师任堂·栗谷李珥故居',ja:'申師任堂·李珥生家'},move:{ko:'차 15분',en:'Car 15min',zh:'开车15分钟',ja:'車15分'},mc:''},
+{time:'18:00',icon:'🦪',cat:'restaurant',ko:'사근진 해물탕',en:'Sageunjin Seafood',zh:'沙根津海鲜汤',ja:'サグンジン海鮮鍋',coords:[37.7800,128.9100],ribbon:1,desc:{ko:'블루리본 ★ · 동해 신선 해물탕 · 전복·킹크랩',en:'Blue Ribbon ★ · Fresh East Sea seafood',zh:'蓝丝带 ★ · 新鲜东海海鲜',ja:'ブルーリボン ★'},move:{ko:'숙소 이동',en:'Back to hotel',zh:'返回酒店',ja:'ホテルへ'},mc:''},
+]]},
+'경주':{en:'Gyeongju',zh:'庆州',ja:'慶州',center:[35.8562,129.2245],hotel:{ko:'황리단길 감성 게스트하우스',en:'Hwanglidangil Guesthouse',zh:'皇理团街感性民宿',ja:'ファンリダンギルゲストハウス',coords:[35.8384,129.2099]},days:[[
+{time:'09:00',icon:'⛩️',cat:'sight',ko:'불국사',en:'Bulguksa Temple',zh:'佛国寺',ja:'仏国寺',coords:[35.7903,129.3321],ribbon:0,desc:{ko:'유네스코 세계문화유산 · 신라불교 정수',en:'UNESCO World Heritage · Silla Buddhism',zh:'联合国教科文组织遗产·新罗佛教',ja:'ユネスコ世界遺産'},move:{ko:'버스 25분',en:'Bus 25min',zh:'公交25分钟',ja:'バス25分'},mc:'1,400원'},
+{time:'11:30',icon:'🪦',cat:'sight',ko:'첨성대',en:'Cheomseongdae',zh:'瞻星台',ja:'瞻星台',coords:[35.8348,129.2191],ribbon:0,desc:{ko:'동양 최고(最古) 천문대 · 신라 선덕여왕',en:'Asia\'s oldest observatory',zh:'东亚最古老天文台',ja:'アジア最古の天文台'},move:{ko:'도보 15분',en:'Walk 15min',zh:'步行15分钟',ja:'徒歩15分'},mc:''},
+{time:'13:00',icon:'🍚',cat:'restaurant',ko:'요석궁',en:'Yoseokgung',zh:'瑶石宫',ja:'瑤石宮',coords:[35.8384,129.2099],ribbon:2,desc:{ko:'블루리본 ★★ · 경주 한정식 대표',en:'Blue Ribbon ★★ · Gyeongju Korean set',zh:'蓝丝带 ★★ · 庆州韩定食代表',ja:'ブルーリボン ★★'},move:{ko:'도보 10분',en:'Walk 10min',zh:'步行10分钟',ja:'徒歩10分'},mc:''},
+{time:'15:00',icon:'🛍️',cat:'sight',ko:'황리단길',en:'Hwanglidangil Street',zh:'皇理团街',ja:'ファンリダンギル',coords:[35.8350,129.2110],ribbon:0,desc:{ko:'경주 핫플 감성 거리 · 한복 대여',en:'Gyeongju trendy street · hanbok rental',zh:'庆州时尚街道·韩服租赁',ja:'慶州トレンドストリート'},move:{ko:'도보 5분',en:'Walk 5min',zh:'步行5分钟',ja:'徒歩5分'},mc:''},
+{time:'18:00',icon:'🌙',cat:'sight',ko:'동궁과 월지',en:'Donggung & Wolji Pond',zh:'东宫和雁鸭池',ja:'東宮と月池',coords:[35.8361,129.2247],ribbon:0,desc:{ko:'신라 별궁 야경 · 야간 조명 명소',en:'Silla palace pond · night lights',zh:'新罗别宫夜景·夜间灯光',ja:'新羅別宮夜景'},move:{ko:'숙소 이동',en:'Back to hotel',zh:'返回酒店',ja:'ホテルへ'},mc:''},
+]]},
+'여수':{en:'Yeosu',zh:'丽水',ja:'麗水',center:[34.7604,127.6622],hotel:{ko:'여수 케이블카 인근 호텔',en:'Yeosu Cable Car Hotel',zh:'丽水缆车附近酒店',ja:'麗水ケーブルカー近くホテル',coords:[34.7462,127.7450]},days:[[
+{time:'10:00',icon:'🚢',cat:'sight',ko:'여수 해상케이블카',en:'Yeosu Maritime Cable Car',zh:'丽水海上缆车',ja:'麗水海上ケーブルカー',coords:[34.7462,127.7450],ribbon:0,desc:{ko:'돌산~자산 바다 위 케이블카 · 야경 명소',en:'Cable car over the sea · best night view',zh:'海上缆车·最佳夜景',ja:'海の上のケーブルカー'},move:{ko:'차 10분',en:'Car 10min',zh:'开车10分钟',ja:'車10分'},mc:''},
+{time:'12:30',icon:'🐙',cat:'restaurant',ko:'여수돌게장',en:'Yeosu Dolge-jang',zh:'丽水石蟹酱',ja:'麗水石カニ漬け',coords:[34.7460,127.7440],ribbon:2,desc:{ko:'블루리본 ★★ · 여수 갯장어·돌게장 명가',en:'Blue Ribbon ★★ · Yeosu crab sauce',zh:'蓝丝带 ★★ · 丽水螃蟹酱名店',ja:'ブルーリボン ★★'},move:{ko:'차 15분',en:'Car 15min',zh:'开车15分钟',ja:'車15分'},mc:''},
+{time:'14:30',icon:'🌅',cat:'sight',ko:'오동도',en:'Odongdo Island',zh:'梧桐岛',ja:'梧桐島',coords:[34.7462,127.7500],ribbon:0,desc:{ko:'동백꽃 · 등대 · 여수 상징 섬',en:'Camellia flowers · lighthouse island',zh:'茶花·灯塔·丽水象征岛',ja:'椿·灯台·麗水のシンボル島'},move:{ko:'도보 15분',en:'Walk 15min',zh:'步行15分钟',ja:'徒歩15分'},mc:''},
+{time:'17:00',icon:'🌉',cat:'sight',ko:'돌산대교 야경',en:'Dolsan Bridge Night View',zh:'突山大桥夜景',ja:'突山大橋夜景',coords:[34.7300,127.6900],ribbon:0,desc:{ko:'여수 야경 1번지 · 일몰 포인트',en:'Yeosu #1 night view spot',zh:'丽水第一夜景·日落点',ja:'麗水No.1夜景'},move:{ko:'차 5분',en:'Car 5min',zh:'开车5分钟',ja:'車5分'},mc:''},
+{time:'19:00',icon:'🦀',cat:'restaurant',ko:'낭만포차거리',en:'Romantic Pojangmacha Street',zh:'浪漫酒摊街',ja:'ロマン屋台通り',coords:[34.7604,127.6622],ribbon:1,desc:{ko:'블루리본 ★ · 여수 밤바다 해산물 포장마차',en:'Blue Ribbon ★ · Yeosu seaside stalls',zh:'蓝丝带 ★ · 丽水夜海海鲜摊',ja:'ブルーリボン ★'},move:{ko:'숙소 이동',en:'Back to hotel',zh:'返回酒店',ja:'ホテルへ'},mc:''},
+]]},
+'전주':{en:'Jeonju',zh:'全州',ja:'全州',center:[35.8242,127.1480],hotel:{ko:'전주한옥마을 게스트하우스',en:'Jeonju Hanok Guesthouse',zh:'全州韩屋村民宿',ja:'全州韓屋村ゲストハウス',coords:[35.8155,127.1531]},days:[[
+{time:'09:30',icon:'🏘️',cat:'sight',ko:'전주한옥마을',en:'Jeonju Hanok Village',zh:'全州韩屋村',ja:'全州韓屋村',coords:[35.8155,127.1531],ribbon:0,desc:{ko:'700여 채 한옥 보존 · 전주의 상징',en:'700+ preserved hanok homes',zh:'700余座韩屋·全州象征',ja:'700棟超の韓屋'},move:{ko:'도보 5분',en:'Walk 5min',zh:'步行5分钟',ja:'徒歩5分'},mc:''},
+{time:'11:30',icon:'🍚',cat:'restaurant',ko:'고궁',en:'Gogung Restaurant',zh:'古宫餐厅',ja:'古宮レストラン',coords:[35.8155,127.1520],ribbon:2,desc:{ko:'블루리본 ★★ · 전주비빔밥 원조 · 60년 전통',en:'Blue Ribbon ★★ · Original Jeonju bibimbap',zh:'蓝丝带 ★★ · 全州拌饭始祖·60年传统',ja:'ブルーリボン ★★'},move:{ko:'도보 10분',en:'Walk 10min',zh:'步行10分钟',ja:'徒歩10分'},mc:''},
+{time:'13:30',icon:'☕',cat:'cafe',ko:'PNB풍년제과',en:'PNB Pungnyeon Bakery',zh:'PNB丰年制果',ja:'PNBプンニョン製菓',coords:[35.8178,127.1490],ribbon:1,desc:{ko:'블루리본 ★ · 전주 초코파이 · 1951년 창업',en:'Blue Ribbon ★ · Jeonju choco pie · est.1951',zh:'蓝丝带 ★ · 全州巧克力派·1951年',ja:'ブルーリボン ★'},move:{ko:'도보 5분',en:'Walk 5min',zh:'步行5分钟',ja:'徒歩5分'},mc:''},
+{time:'15:00',icon:'🏯',cat:'sight',ko:'경기전',en:'Gyeonggijeon Shrine',zh:'庆基殿',ja:'慶基殿',coords:[35.8165,127.1535],ribbon:0,desc:{ko:'태조 이성계 어진 봉안처',en:'Royal portrait shrine',zh:'太祖李成桂御真奉安处',ja:'太祖御真奉安所'},move:{ko:'도보 15분',en:'Walk 15min',zh:'步行15分钟',ja:'徒歩15分'},mc:''},
+{time:'17:30',icon:'🍺',cat:'restaurant',ko:'삼백집',en:'Sambaek House',zh:'三百家',ja:'三百家',coords:[35.8200,127.1470],ribbon:1,desc:{ko:'블루리본 ★ · 전주 콩나물국밥 원조 · 24시간',en:'Blue Ribbon ★ · Bean sprout soup · 24hr',zh:'蓝丝带 ★ · 豆芽汤饭始祖·24小时',ja:'ブルーリボン ★'},move:{ko:'숙소 이동',en:'Back to hotel',zh:'返回酒店',ja:'ホテルへ'},mc:''},
+]]},
+'속초':{en:'Sokcho',zh:'束草',ja:'束草',center:[38.2070,128.5918],hotel:{ko:'속초 엑스포 해변 숙소',en:'Sokcho Expo Beach Stay',zh:'束草世博海边住所',ja:'束草エクスポビーチ宿',coords:[38.2080,128.5810]},days:[[
+{time:'09:00',icon:'🏔️',cat:'nature',ko:'설악산 국립공원',en:'Seoraksan National Park',zh:'雪岳山国家公园',ja:'雪岳山国立公園',coords:[38.1192,128.4658],ribbon:0,desc:{ko:'비선대·울산바위 트레킹 · 케이블카',en:'Biseondae trekking · cable car',zh:'飞仙台·蔚山岩徒步·缆车',ja:'飛仙台トレッキング·ケーブルカー'},move:{ko:'버스 30분',en:'Bus 30min',zh:'公交30分钟',ja:'バス30分'},mc:'1,400원'},
+{time:'13:00',icon:'🍢',cat:'restaurant',ko:'속초 중앙시장 닭강정',en:'Sokcho Market Dak-gangjeong',zh:'束草中央市场炸鸡',ja:'束草中央市場タッカンジョン',coords:[38.2070,128.5918],ribbon:1,desc:{ko:'블루리본 ★ · 속초 명물 바삭한 닭강정',en:'Blue Ribbon ★ · Sokcho crispy chicken',zh:'蓝丝带 ★ · 束草名物炸鸡',ja:'ブルーリボン ★'},move:{ko:'도보 5분',en:'Walk 5min',zh:'步行5分钟',ja:'徒歩5分'},mc:''},
+{time:'15:00',icon:'🌊',cat:'sight',ko:'청초호 수변공원',en:'Cheongcho Lake Park',zh:'清草湖水边公园',ja:'清草湖水辺公園',coords:[38.2000,128.5900],ribbon:0,desc:{ko:'속초 호수뷰 산책 · 영금정 포토존',en:'Sokcho lakeside walk',zh:'束草湖景散步·打卡',ja:'束草湖畔散歩'},move:{ko:'차 15분',en:'Car 15min',zh:'开车15分钟',ja:'車15分'},mc:''},
+{time:'17:00',icon:'🦞',cat:'restaurant',ko:'대포항 대게·물회',en:'Daepo Port Crab & Mulhoe',zh:'大浦港帝王蟹·水拌生鱼',ja:'大浦港ズワイガニ·ムルフェ',coords:[38.1880,128.6100],ribbon:2,desc:{ko:'블루리본 ★★ · 속초 대게·물회 최고 맛집',en:'Blue Ribbon ★★ · Sokcho crab & raw fish',zh:'蓝丝带 ★★ · 束草帝王蟹名店',ja:'ブルーリボン ★★'},move:{ko:'숙소 이동',en:'Back to hotel',zh:'返回酒店',ja:'ホテルへ'},mc:''},
+]]}
+};
+
+// ── STATE & HELPERS ───────────────────────────────────────
+let lang='ko', state={region:'',with:'',transport:'',budget:''};
+let currentItinerary=[], leafletMap=null, mapVisible=false, editingIdx=null;
+
+function t(k){ return (I18N[lang]||I18N.ko)[k]||k; }
+function pn(p){ return p.customName||(p[lang]||p.ko); }
+
+// ── LANGUAGE ─────────────────────────────────────────────
+function setLang(l){
+  lang=l;
+  document.querySelectorAll('.lang-btn').forEach((b,i)=>b.classList.toggle('on',['ko','en','zh','ja'][i]===l));
+  document.documentElement.lang=l;
+  applyTr();
+}
+function applyTr(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ const v=t(el.dataset.i18n); if(v!==el.dataset.i18n) el.textContent=v; });
+  document.querySelectorAll('[data-ik]').forEach(el=>{ const v=t(el.dataset.ik); if(v!==el.dataset.ik) el.textContent=v; });
+  if(document.getElementById('p-result').classList.contains('active')&&currentItinerary.length){ renderItinerary(); updateResultHeader(); }
 }
 
-function goInput() {
-  goPage('p-input');
-  setTimeout(updateProgress, 100);
+// ── PAGE ─────────────────────────────────────────────────
+function goPage(id){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); }
+
+// ── INPUT ─────────────────────────────────────────────────
+function pick(el,group,val){ document.querySelectorAll(`#${group}-chips .chip`).forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); state[group]=val; calcProgress(); }
+function tog(el){ el.classList.toggle('sel'); calcProgress(); }
+function calcProgress(){
+  const f=[state.region,document.getElementById('date-start').value,state.with,document.querySelectorAll('#style-chips .sel').length>0,state.transport,document.getElementById('age-sel').value,state.budget];
+  document.getElementById('progress').style.width=Math.round(f.filter(Boolean).length/f.length*100)+'%';
 }
 
-function selectOne(el, group) {
-  document.querySelectorAll('#' + group + '-chips .chip')
-    .forEach(c => c.classList.remove('sel'));
-  el.classList.add('sel');
-  state[group] = el.textContent.replace(/[^\w가-힣]/g,'').trim();
-  updateProgress();
-}
-
-function toggleChip(el) {
-  el.classList.toggle('sel');
-  updateProgress();
-}
-
-function updateProgress() {
-  const fields = [
-    state.region,
-    document.getElementById('date-start').value,
-    state.with,
-    document.querySelectorAll('#style-chips .sel').length > 0,
-    state.transport,
-    document.getElementById('age-sel').value,
-    document.getElementById('mbti-sel').value,
-    state.budget
-  ];
-  const filled = fields.filter(Boolean).length;
-  const pct = Math.round((filled / fields.length) * 100);
-  document.getElementById('progress').style.width = pct + '%';
-}
-
-function makeplan() {
-  // 최소 검증
-  if (!state.region) { showToast('여행 지역을 선택해주세요.'); return; }
-  if (!document.getElementById('date-start').value) { showToast('출발일을 선택해주세요.'); return; }
-
-  // 로딩 화면 진입
+// ── PLAN ─────────────────────────────────────────────────
+function makePlan(){
+  if(!state.region){ showToast(t('toastRegion')); return; }
+  if(!document.getElementById('date-start').value){ showToast(t('toastDate')); return; }
   goPage('p-loading');
-
-  // 결과 화면에 선택값 반영
-  const region = state.region || '서울';
-  const transport = state.transport || '대중교통';
-  const styles = [...document.querySelectorAll('#style-chips .sel')]
-    .map(c => c.textContent.replace(/[🍽️☕🌿📸🏃🏛️🛍️🌊]/g,'').trim()).join(' / ') || '감성 / 맛집';
-  const withPpl = state.with || '';
-  const mbti = document.getElementById('mbti-sel').value;
-
-  document.getElementById('result-title').textContent = region + ' 2박 3일 여행';
-  document.getElementById('r-region').textContent = region;
-  document.getElementById('r-transport').textContent = transport;
-  document.getElementById('r-style').textContent = styles;
-
-  const tags = document.getElementById('result-tags');
-  tags.innerHTML = '';
-  if (transport) tags.innerHTML += `<span class="result-tag">${transport}</span>`;
-  if (withPpl) tags.innerHTML += `<span class="result-tag">${withPpl} 여행</span>`;
-  if (mbti) tags.innerHTML += `<span class="result-tag">MBTI: ${mbti}</span>`;
-
-  // 로딩 단계 애니메이션
-  const steps = document.querySelectorAll('.loading-step');
-  steps.forEach(s => s.style.opacity = '0.4');
-  let i = 0;
-  const iv = setInterval(() => {
-    if (i < steps.length) { steps[i].style.opacity = '1'; i++; }
-    else {
-      clearInterval(iv);
-      setTimeout(() => goPage('p-result'), 600);
-    }
-  }, 700);
+  const steps=document.querySelectorAll('.ld-step');
+  steps.forEach(s=>s.classList.remove('on'));
+  let i=0; const iv=setInterval(()=>{ if(i<steps.length){steps[i].classList.add('on');i++;}else{clearInterval(iv);setTimeout(showResult,500);} },700);
+}
+function showResult(){
+  const rd=RD[state.region]; if(!rd){goPage('p-input');return;}
+  currentItinerary=rd.days.map(day=>day.map(p=>({...p,note:'',customName:''})));
+  goPage('p-result'); updateResultHeader(); renderItinerary();
+  mapVisible=false; document.getElementById('plan-map').classList.remove('show');
+  document.getElementById('map-toggle-btn').textContent=t('mapShow');
+  if(leafletMap){leafletMap.remove();leafletMap=null;}
+}
+function updateResultHeader(){
+  const rd=RD[state.region]; if(!rd) return;
+  const rn=rd[lang]||rd.en;
+  const days=currentItinerary.length, nights=days-1;
+  document.getElementById('r-title').textContent=`${rn} ${nights>0?nights+'박 '+days+'일':'당일치기'} 여행`;
+  const sn=[...document.querySelectorAll('#style-chips .sel')].map(c=>t('s.'+c.dataset.style)).join(' · ');
+  document.getElementById('r-sub').textContent=sn||(lang==='ko'?'맞춤 여행 코스':lang==='en'?'Custom Travel Course':lang==='zh'?'定制旅行路线':'カスタム旅行コース');
+  document.getElementById('r-region').textContent=rn;
+  const s=document.getElementById('date-start').value,e=document.getElementById('date-end').value;
+  document.getElementById('r-period').textContent=s&&e?`${s} ~ ${e}`:`${days}${lang==='ko'?'일':lang==='ja'?'日':'天'}`;
+  document.getElementById('r-style').textContent=sn||'-';
+  const trM={public:t('tr.public'),car:t('tr.car'),taxi:t('tr.taxi'),walk:t('tr.walk')};
+  document.getElementById('r-transport').textContent=trM[state.transport]||'-';
+  const tags=document.getElementById('r-tags'); tags.innerHTML='';
+  if(state.transport) tags.innerHTML+=`<span class="result-tag">${trM[state.transport]}</span>`;
+  const wM={solo:t('with.solo'),couple:t('with.couple'),friends:t('with.friends'),family:t('with.family'),kids:t('with.kids'),pet:t('with.pet')};
+  if(state.with) tags.innerHTML+=`<span class="result-tag">${wM[state.with]}</span>`;
+  const mbti=document.getElementById('mbti-sel').value;
+  if(mbti) tags.innerHTML+=`<span class="result-tag">MBTI: ${mbti}</span>`;
 }
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+// ── RENDER ────────────────────────────────────────────────
+const DAY_SUBS={'서울':['종로·익선동 코스','성수·한강 코스'],'부산':['해운대·감천·광안리 코스'],'제주':['성산·협재 코스'],'강릉':['커피·경포·오죽헌 코스'],'경주':['불국사·황리단길 코스'],'여수':['케이블카·오동도 코스'],'전주':['한옥마을·한정식 코스'],'속초':['설악산·대포항 코스']};
+function catCls(c){ return c==='restaurant'?'food':c==='cafe'?'cafe':''; }
+function catLbl(c){ return t('cat_'+c)||c; }
+function ribbonHTML(r){ if(!r) return ''; return `<div class="ribbon-badge">🎀 ${t('ribbon')} ${'★'.repeat(r)+'☆'.repeat(3-r)}</div>`; }
+
+function renderItinerary(){
+  const rd=RD[state.region]; if(!rd) return;
+  const hotelName=rd.hotel[lang]||rd.hotel.ko;
+  let html='';
+  currentItinerary.forEach((day,di)=>{
+    const sub=(DAY_SUBS[state.region]||[])[di]||'';
+    html+=`<div class="day-card"><div class="day-header">${t('dayLabel')} ${di+1} <span class="day-header-sub">${sub}</span></div>`;
+    day.forEach((p,pi)=>{
+      const name=pn(p), desc=p.desc?(p.desc[lang]||p.desc.ko):'', move=p.move?(p.move[lang]||p.move.ko):'';
+      html+=`<div class="place-item" id="item-${di}-${pi}">
+        <div class="time-col">${p.time}</div>
+        <div class="place-thumb">${p.icon}</div>
+        <div class="place-info">
+          ${ribbonHTML(p.ribbon)}
+          <span class="place-cat ${catCls(p.cat)}">${catLbl(p.cat)}</span>
+          <div class="place-name">${name}</div>
+          <div class="place-meta">${desc}${p.note?'<br/>📝 '+p.note:''}</div>
+        </div>
+        <button class="edit-btn" onclick="openEdit(${di},${pi})">✏️</button>
+      </div>`;
+      if(pi<day.length-1) html+=`<div class="arrow-row">↓ ${move}${p.mc?' · <b>'+p.mc+'</b>':''}</div>`;
+      else html+=`<div class="arrow-row">↓ ${t('backToHotel')} · 🏨 ${hotelName}</div>`;
+    });
+    html+='</div>';
+  });
+  // Route card
+  const d0=currentItinerary[0]||[];
+  const nodes=d0.map(p=>`<span class="route-node">${pn(p)}</span><span style="color:var(--sub);font-size:12px">→</span>`).join('');
+  html+=`<div class="route-card"><div style="font-size:14px;font-weight:700">📍 ${t('routeTitle')}</div>
+    <div class="route-flow"><span class="hotel-node">🏨 ${t('hotel')}</span><span style="color:var(--sub);font-size:12px">→</span>${nodes}<span class="hotel-node">🏨 ${t('hotel')}</span></div></div>`;
+  document.getElementById('itinerary-container').innerHTML=html;
 }
+
+// ── MAP ───────────────────────────────────────────────────
+function toggleMap(){
+  const el=document.getElementById('plan-map'), btn=document.getElementById('map-toggle-btn');
+  mapVisible=!mapVisible;
+  el.classList.toggle('show',mapVisible);
+  btn.textContent=t(mapVisible?'mapHide':'mapShow');
+  if(mapVisible) setTimeout(initMap,100);
+}
+function initMap(){
+  const rd=RD[state.region]; if(!rd) return;
+  if(leafletMap){leafletMap.remove();leafletMap=null;}
+  leafletMap=L.map('plan-map').setView(rd.hotel.coords,13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:18}).addTo(leafletMap);
+  const hc=rd.hotel.coords;
+  // Hotel marker
+  L.marker(hc,{icon:L.divIcon({html:'<div style="background:#ef4444;color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:16px;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)">🏨</div>',className:'',iconSize:[32,32],iconAnchor:[16,16]})}).addTo(leafletMap).bindPopup(`<b>${rd.hotel[lang]||rd.hotel.ko}</b><br/>${t('hotel')}`);
+  const coords=[hc], d0=currentItinerary[0]||[];
+  d0.forEach((p,i)=>{
+    L.marker(p.coords,{icon:L.divIcon({html:`<div style="background:#2563eb;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.25)">${i+1}</div>`,className:'',iconSize:[28,28],iconAnchor:[14,14]})}).addTo(leafletMap).bindPopup(`<b>${pn(p)}</b><br/>${p.time}`);
+    coords.push(p.coords);
+  });
+  coords.push(hc);
+  L.polyline(coords,{color:'#2563eb',weight:3,dashArray:'6,9',opacity:.8}).addTo(leafletMap);
+  if(coords.length>1) leafletMap.fitBounds(coords,{padding:[20,20]});
+}
+
+// ── EDIT ─────────────────────────────────────────────────
+function openEdit(di,pi){
+  editingIdx={di,pi}; const p=currentItinerary[di][pi];
+  document.getElementById('edit-time').value=p.time;
+  document.getElementById('edit-name').value=pn(p);
+  document.getElementById('edit-note').value=p.note||'';
+  document.getElementById('edit-modal').classList.add('open');
+}
+function closeModal(){ document.getElementById('edit-modal').classList.remove('open'); editingIdx=null; }
+function saveEdit(){
+  if(!editingIdx) return; const {di,pi}=editingIdx;
+  currentItinerary[di][pi].time=document.getElementById('edit-time').value;
+  currentItinerary[di][pi].customName=document.getElementById('edit-name').value;
+  currentItinerary[di][pi].note=document.getElementById('edit-note').value;
+  closeModal(); renderItinerary();
+  if(mapVisible&&leafletMap){leafletMap.remove();leafletMap=null;initMap();}
+  showToast(t('toastSaved'));
+}
+function deleteItem(){
+  if(!editingIdx) return; const {di,pi}=editingIdx;
+  currentItinerary[di].splice(pi,1);
+  closeModal(); renderItinerary();
+  if(mapVisible&&leafletMap){leafletMap.remove();leafletMap=null;initMap();}
+}
+
+// ── TOAST ─────────────────────────────────────────────────
+function showToast(msg){ const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),2500); }
+document.getElementById('edit-modal').addEventListener('click',function(e){ if(e.target===this) closeModal(); });
 </script>
 </body>
 </html>
