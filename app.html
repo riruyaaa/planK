@@ -542,6 +542,30 @@ function initMap(){
   if(coords.length>1) leafletMap.fitBounds(coords,{padding:[20,20]});
 }
 
+// ── DRAG & DROP ──────────────────────────────────────────
+function initSortable(){
+  currentItinerary.forEach((_,di)=>{
+    const el=document.getElementById('day-list-'+di);
+    if(!el) return;
+    Sortable.create(el,{
+      animation:180,
+      handle:'.drag-handle',
+      ghostClass:'sortable-ghost',
+      chosenClass:'sortable-chosen',
+      dragClass:'sortable-drag',
+      onEnd(evt){
+        const {oldIndex,newIndex}=evt;
+        if(oldIndex===newIndex) return;
+        const day=currentItinerary[di];
+        const moved=day.splice(oldIndex,1)[0];
+        day.splice(newIndex,0,moved);
+        renderItinerary();
+        if(mapVisible) initMap();
+      }
+    });
+  });
+}
+
 // ── EDIT ─────────────────────────────────────────────────
 function openEdit(di,pi){
   editingIdx={di,pi}; const p=currentItinerary[di][pi];
