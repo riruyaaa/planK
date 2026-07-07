@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>플렌K - 나에게 딱 맞는 한국 여행 플랜</title>
+<style>
+:root {
+  --blue: #2563eb;
+  --blue-light: #eff6ff;
+  --blue-mid: #bfdbfe;
+  --green: #10b981;
+  --ink: #111827;
+  --sub: #6b7280;
+  --line: #e5e7eb;
+  --bg: #f8fafc;
+  --white: #ffffff;
+  --radius: 16px;
+  --shadow: 0 4px 20px rgba(37,99,235,.10);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+/* PAGE SYSTEM */
+.page { display: none; min-height: 100vh; }
+.page.active { display: flex; flex-direction: column; }
+
+/* ─────────── PAGE 1: INTRO ─────────── */
+#p-intro {
+  background: linear-gradient(160deg, #1e3a8a 0%, #2563eb 50%, #7c3aed 100%);
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 24px;
+  position: relative;
+  overflow: hidden;
+}
+#p-intro::before {
+  content: "";
+  position: absolute;
+  width: 600px; height: 600px;
+  background: rgba(255,255,255,.04);
+  border-radius: 50%;
+  top: -200px; right: -200px;
+}
+#p-intro::after {
+  content: "";
+  position: absolute;
+  width: 400px; height: 400px;
+  background: rgba(255,255,255,.04);
+  border-radius: 50%;
+  bottom: -150px; left: -150px;
+}
+.intro-inner { position: relative; z-index: 1; max-width: 400px; }
+.logo-wrap { margin-bottom: 40px; }
+.logo {
+  font-size: 48px; font-weight: 900;
+  color: #fff; letter-spacing: -1px;
+}
+.logo span { color: #93c5fd; }
+.logo-sub {
+  font-size: 13px; color: rgba(255,255,255,.6);
+  margin-top: 4px; letter-spacing: 2px;
+}
+.intro-title {
+  font-size: 32px; font-weight: 800;
+  color: #fff; line-height: 1.3;
+  margin-bottom: 18px;
+}
+.intro-desc {
+  font-size: 15px; color: rgba(255,255,255,.75);
+  line-height: 1.7; margin-bottom: 48px;
+}
+.badges {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  justify-content: center; margin-bottom: 40px;
+}
+.badge {
+  background: rgba(255,255,255,.15);
+  color: #fff; border-radius: 999px;
+  padding: 6px 14px; font-size: 13px;
+  backdrop-filter: blur(4px);
+}
+.btn-main {
+  display: block; width: 100%;
+  background: #fff; color: var(--blue);
+  font-size: 18px; font-weight: 800;
+  padding: 18px; border-radius: 16px;
+  border: none; cursor: pointer;
+  box-shadow: 0 8px 32px rgba(0,0,0,.2);
+  transition: transform .15s, box-shadow .15s;
+}
+.btn-main:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,.25); }
+.btn-main:active { transform: translateY(0); }
+
+/* ─────────── PAGE 2: INPUT ─────────── */
+#p-input { background: var(--bg); }
+.top-bar {
+  background: var(--white);
+  border-bottom: 1px solid var(--line);
+  padding: 16px 20px;
+  display: flex; align-items: center; gap: 12px;
+  position: sticky; top: 0; z-index: 10;
+}
+.back-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 20px; color: var(--ink); padding: 4px;
+}
+.top-bar-title { font-size: 17px; font-weight: 700; }
+.top-bar-step { margin-left: auto; font-size: 13px; color: var(--sub); }
+
+.progress-bar {
+  height: 3px; background: var(--line);
+}
+.progress-fill {
+  height: 100%; background: var(--blue);
+  transition: width .3s;
+}
+
+.input-body { padding: 20px; max-width: 600px; margin: 0 auto; }
+
+.section-label {
+  font-size: 12px; font-weight: 700;
+  color: var(--sub); letter-spacing: 1px;
+  margin: 24px 0 10px;
+  text-transform: uppercase;
+}
+.section-label:first-child { margin-top: 4px; }
+.q-title { font-size: 17px; font-weight: 700; margin-bottom: 12px; }
+
+/* Region chips */
+.chip-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+}
+.chip-grid.col3 { grid-template-columns: repeat(3, 1fr); }
+.chip-grid.col2 { grid-template-columns: repeat(2, 1fr); }
+.chip {
+  padding: 12px 8px; border: 1.5px solid var(--line);
+  border-radius: 12px; background: var(--white);
+  text-align: center; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all .15s; color: var(--ink);
+}
+.chip:hover { border-color: var(--blue); color: var(--blue); }
+.chip.sel {
+  background: var(--blue); color: #fff;
+  border-color: var(--blue);
+}
+.chip.multi.sel {
+  background: var(--blue-light); color: var(--blue);
+  border-color: var(--blue);
+}
+
+/* Date input */
+.date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.date-field {
+  border: 1.5px solid var(--line); border-radius: 12px;
+  padding: 14px; background: var(--white);
+}
+.date-field label { display: block; font-size: 11px; color: var(--sub); margin-bottom: 4px; }
+.date-field input {
+  border: none; outline: none; width: 100%;
+  font-size: 14px; font-weight: 600; color: var(--ink);
+  background: transparent; cursor: pointer;
+}
+
+/* MBTI select */
+.select-field {
+  border: 1.5px solid var(--line); border-radius: 12px;
+  padding: 14px 16px; background: var(--white);
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer;
+}
+.select-field span { font-size: 15px; font-weight: 600; color: var(--sub); }
+.select-field .arrow { color: var(--sub); }
+
+select.native {
+  width: 100%; border: 1.5px solid var(--line);
+  border-radius: 12px; padding: 14px 16px;
+  font-size: 15px; font-weight: 600; color: var(--ink);
+  background: var(--white); cursor: pointer; outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+}
+
+.divider { height: 1px; background: var(--line); margin: 20px 0; }
+
+.btn-primary {
+  width: 100%; padding: 18px;
+  background: var(--blue); color: #fff;
+  font-size: 17px; font-weight: 800;
+  border: none; border-radius: 16px;
+  cursor: pointer; margin-top: 28px;
+  transition: background .15s, transform .1s;
+}
+.btn-primary:hover { background: #1d4ed8; }
+.btn-primary:active { transform: scale(.99); }
+
+/* ─────────── LOADING ─────────── */
+#p-loading {
+  background: linear-gradient(160deg, #1e3a8a 0%, #2563eb 100%);
+  align-items: center; justify-content: center;
+  text-align: center;
+}
+.loading-inner { color: #fff; }
+.spinner {
+  width: 64px; height: 64px;
+  border: 5px solid rgba(255,255,255,.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 28px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-title { font-size: 24px; font-weight: 800; margin-bottom: 12px; }
+.loading-desc { font-size: 14px; color: rgba(255,255,255,.7); line-height: 1.6; }
+.loading-steps { margin-top: 32px; display: flex; flex-direction: column; gap: 10px; }
+.loading-step {
+  background: rgba(255,255,255,.12);
+  border-radius: 10px; padding: 12px 20px;
+  font-size: 13px; color: rgba(255,255,255,.8);
+  display: flex; align-items: center; gap: 10px;
+}
+.step-icon { font-size: 18px; }
+
+/* ─────────── PAGE 3: RESULT ─────────── */
+#p-result { background: var(--bg); }
+
+.result-hero {
+  background: linear-gradient(135deg, #1e40af, #2563eb);
+  padding: 28px 20px 24px;
+  color: #fff;
+}
+.result-badge {
+  background: rgba(255,255,255,.2);
+  display: inline-block; border-radius: 999px;
+  padding: 4px 12px; font-size: 12px;
+  margin-bottom: 12px;
+}
+.result-title { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
+.result-sub { font-size: 14px; color: rgba(255,255,255,.8); }
+.result-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+.result-tag {
+  background: rgba(255,255,255,.15);
+  border-radius: 999px; padding: 4px 12px;
+  font-size: 12px; color: #fff;
+}
+
+.result-body { padding: 20px; max-width: 600px; margin: 0 auto; }
+
+.summary-card {
+  background: var(--white); border-radius: var(--radius);
+  padding: 18px; margin-bottom: 20px;
+  border: 1px solid var(--line);
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+.summary-item label { display: block; font-size: 11px; color: var(--sub); margin-bottom: 3px; }
+.summary-item span { font-size: 14px; font-weight: 700; }
+
+.day-card {
+  background: var(--white); border-radius: var(--radius);
+  border: 1px solid var(--line); margin-bottom: 16px;
+  overflow: hidden;
+}
+.day-header {
+  padding: 14px 18px;
+  background: var(--blue); color: #fff;
+  font-size: 15px; font-weight: 800;
+  display: flex; align-items: center; gap: 8px;
+}
+.day-header-sub { font-weight: 400; font-size: 13px; opacity: .8; }
+
+.place-item {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 16px 18px; border-top: 1px solid var(--line);
+  cursor: pointer; transition: background .1s;
+}
+.place-item:hover { background: #f9fafb; }
+.place-item:first-of-type { border-top: none; }
+
+.time-col {
+  min-width: 52px; font-size: 13px;
+  font-weight: 700; color: var(--blue); padding-top: 2px;
+}
+.place-thumb {
+  width: 56px; height: 46px; border-radius: 10px;
+  background: var(--blue-mid); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+}
+.place-info { flex: 1; }
+.place-name { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+.place-meta { font-size: 12px; color: var(--sub); line-height: 1.5; }
+.place-cat {
+  display: inline-block; background: var(--blue-light);
+  color: var(--blue); border-radius: 6px;
+  padding: 2px 7px; font-size: 11px; font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.arrow-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 18px 8px 84px;
+  border-top: 1px solid var(--line);
+  background: #f9fafb;
+}
+.arrow-dot { color: var(--sub); font-size: 11px; }
+.arrow-info { font-size: 12px; color: var(--sub); }
+.arrow-info b { color: var(--blue); }
+
+.route-card {
+  background: var(--white); border-radius: var(--radius);
+  border: 1px solid var(--line); padding: 18px;
+  margin-bottom: 16px;
+}
+.route-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+.route-flow {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+}
+.route-node {
+  background: var(--blue-light); color: var(--blue);
+  border-radius: 10px; padding: 8px 12px;
+  font-size: 13px; font-weight: 700;
+}
+.route-arrow { color: var(--sub); font-size: 14px; }
+
+.action-row {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px; margin-top: 8px; margin-bottom: 24px;
+}
+.action-btn {
+  padding: 14px; border-radius: 14px;
+  font-size: 14px; font-weight: 700;
+  border: none; cursor: pointer; transition: all .15s;
+}
+.action-btn.primary { background: var(--blue); color: #fff; }
+.action-btn.out { background: var(--white); color: var(--blue); border: 1.5px solid var(--blue); }
+.action-btn.gray { background: var(--white); color: var(--ink); border: 1.5px solid var(--line); }
+.action-btn:hover { opacity: .85; transform: translateY(-1px); }
+
+/* ─────────── BOTTOM NAV ─────────── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--white); border-top: 1px solid var(--line);
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+  z-index: 100;
+}
+.nav-item {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 3px; padding: 6px 4px; cursor: pointer;
+  font-size: 11px; color: var(--sub); border: none;
+  background: none; transition: color .15s;
+}
+.nav-item.active { color: var(--blue); }
+.nav-item .icon { font-size: 22px; }
+.has-nav { padding-bottom: 80px; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 90px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--ink); color: #fff;
+  padding: 12px 20px; border-radius: 12px;
+  font-size: 14px; font-weight: 600;
+  opacity: 0; pointer-events: none;
+  transition: all .3s; white-space: nowrap; z-index: 200;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media (min-width: 640px) {
+  .chip-grid { grid-template-columns: repeat(5, 1fr); }
+  .chip-grid.col3 { grid-template-columns: repeat(4, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- ───────── PAGE 1: INTRO ───────── -->
+<div id="p-intro" class="page active">
+  <div class="intro-inner">
+    <div class="logo-wrap">
+      <div class="logo">플렌<span>K</span></div>
+      <div class="logo-sub">KOREA TRAVEL PLANNER</div>
+    </div>
+
+    <h1 class="intro-title">나에게 딱 맞는<br/>한국 여행 플랜</h1>
+    <p class="intro-desc">
+      취향, 일정, 동선까지 고려해서<br/>
+      나만의 여행 코스를 만들어드려요.
+    </p>
+
+    <div class="badges">
+      <span class="badge">🗺️ 동선 최적화</span>
+      <span class="badge">🍽️ 맛집 추천</span>
+      <span class="badge">🏨 숙소 연결</span>
+      <span class="badge">✨ MBTI 맞춤</span>
+    </div>
+
+    <button class="btn-main" onclick="goInput()">여행 플랜 만들기 →</button>
+  </div>
+</div>
+
+<!-- ───────── PAGE 2: INPUT ───────── -->
+<div id="p-input" class="page">
+  <div class="top-bar">
+    <button class="back-btn" onclick="goPage('p-intro')">←</button>
+    <span class="top-bar-title">여행 정보 입력</span>
+    <span class="top-bar-step">1/1</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+
+  <div class="input-body">
+
+    <!-- 여행 지역 -->
+    <div class="section-label">여행 지역</div>
+    <div class="q-title">어디로 여행을 떠나시나요?</div>
+    <div class="chip-grid" id="region-chips">
+      <div class="chip" onclick="selectOne(this,'region')">서울</div>
+      <div class="chip" onclick="selectOne(this,'region')">부산</div>
+      <div class="chip" onclick="selectOne(this,'region')">제주</div>
+      <div class="chip" onclick="selectOne(this,'region')">강릉</div>
+      <div class="chip" onclick="selectOne(this,'region')">경주</div>
+      <div class="chip" onclick="selectOne(this,'region')">여수</div>
+      <div class="chip" onclick="selectOne(this,'region')">전주</div>
+      <div class="chip" onclick="selectOne(this,'region')">속초</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 여행 기간 -->
+    <div class="section-label">여행 날짜</div>
+    <div class="q-title">언제 여행을 가시나요?</div>
+    <div class="date-row">
+      <div class="date-field">
+        <label>출발일</label>
+        <input type="date" id="date-start" onchange="updateProgress()"/>
+      </div>
+      <div class="date-field">
+        <label>귀가일</label>
+        <input type="date" id="date-end" onchange="updateProgress()"/>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 동행 -->
+    <div class="section-label">누구와 함께</div>
+    <div class="q-title">누구와 여행하시나요?</div>
+    <div class="chip-grid col3" id="with-chips">
+      <div class="chip" onclick="selectOne(this,'with')">🙋 혼자</div>
+      <div class="chip" onclick="selectOne(this,'with')">💑 커플</div>
+      <div class="chip" onclick="selectOne(this,'with')">👫 친구</div>
+      <div class="chip" onclick="selectOne(this,'with')">👨‍👩‍👧 가족</div>
+      <div class="chip" onclick="selectOne(this,'with')">👶 아이와</div>
+      <div class="chip" onclick="selectOne(this,'with')">🐾 반려동물</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 여행 스타일 -->
+    <div class="section-label">여행 스타일 (복수 선택)</div>
+    <div class="q-title">어떤 여행을 원하시나요?</div>
+    <div class="chip-grid" id="style-chips">
+      <div class="chip multi" onclick="toggleChip(this)">🍽️ 맛집</div>
+      <div class="chip multi" onclick="toggleChip(this)">☕ 카페</div>
+      <div class="chip multi" onclick="toggleChip(this)">🌿 힐링</div>
+      <div class="chip multi" onclick="toggleChip(this)">📸 사진</div>
+      <div class="chip multi" onclick="toggleChip(this)">🏃 액티비티</div>
+      <div class="chip multi" onclick="toggleChip(this)">🏛️ 역사</div>
+      <div class="chip multi" onclick="toggleChip(this)">🛍️ 쇼핑</div>
+      <div class="chip multi" onclick="toggleChip(this)">🌊 자연</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 이동수단 -->
+    <div class="section-label">이동수단</div>
+    <div class="q-title">주로 어떻게 이동하실 건가요?</div>
+    <div class="chip-grid col2" id="transport-chips">
+      <div class="chip" onclick="selectOne(this,'transport')">🚇 대중교통</div>
+      <div class="chip" onclick="selectOne(this,'transport')">🚗 자차</div>
+      <div class="chip" onclick="selectOne(this,'transport')">🚕 택시</div>
+      <div class="chip" onclick="selectOne(this,'transport')">🚶 도보</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 나이대 -->
+    <div class="section-label">나이대</div>
+    <select class="native" id="age-sel" onchange="updateProgress()">
+      <option value="">나이대를 선택하세요</option>
+      <option>10대</option>
+      <option>20대</option>
+      <option>30대</option>
+      <option>40대</option>
+      <option>50대 이상</option>
+    </select>
+
+    <div style="margin-top:14px"></div>
+
+    <!-- MBTI -->
+    <div class="section-label">MBTI</div>
+    <select class="native" id="mbti-sel" onchange="updateProgress()">
+      <option value="">MBTI를 선택하세요</option>
+      <option>ENFP</option><option>ENFJ</option>
+      <option>ENTP</option><option>ENTJ</option>
+      <option>ESFP</option><option>ESFJ</option>
+      <option>ESTP</option><option>ESTJ</option>
+      <option>INFP</option><option>INFJ</option>
+      <option>INTP</option><option>INTJ</option>
+      <option>ISFP</option><option>ISFJ</option>
+      <option>ISTP</option><option>ISTJ</option>
+    </select>
+
+    <div class="divider"></div>
+
+    <!-- 예산 -->
+    <div class="section-label">여행 예산</div>
+    <div class="q-title">1인 기준 예산은 얼마인가요?</div>
+    <div class="chip-grid col3" id="budget-chips">
+      <div class="chip" onclick="selectOne(this,'budget')">💸 절약<br/><small style="font-weight:400;font-size:11px">10만원 이하</small></div>
+      <div class="chip" onclick="selectOne(this,'budget')">💰 보통<br/><small style="font-weight:400;font-size:11px">30만원대</small></div>
+      <div class="chip" onclick="selectOne(this,'budget')">💎 여유<br/><small style="font-weight:400;font-size:11px">50만원 이상</small></div>
+    </div>
+
+    <button class="btn-primary" onclick="makeplan()">✨ 나만의 여행 플랜 만들기</button>
+  </div>
+</div>
+
+<!-- ───────── LOADING ───────── -->
+<div id="p-loading" class="page">
+  <div class="loading-inner" style="padding:40px 24px; max-width:360px; margin:0 auto;">
+    <div class="spinner"></div>
+    <div class="loading-title">🧭 일정을 만들고 있어요</div>
+    <div class="loading-desc">입력한 취향과 동선을 분석해서<br/>나만의 여행 플랜을 구성하고 있어요.</div>
+    <div class="loading-steps" id="loading-steps">
+      <div class="loading-step"><span class="step-icon">📍</span> 지역 장소 데이터 수집 중...</div>
+      <div class="loading-step"><span class="step-icon">🗺️</span> 동선 최적화 계산 중...</div>
+      <div class="loading-step"><span class="step-icon">🍽️</span> 맛집 & 카페 매칭 중...</div>
+      <div class="loading-step"><span class="step-icon">🏨</span> 숙소 추천 연결 중...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ───────── PAGE 3: RESULT ───────── -->
+<div id="p-result" class="page">
+
+  <div class="result-hero">
+    <div class="result-badge">✨ 플렌K 추천 플랜</div>
+    <div class="result-title" id="result-title">서울 2박 3일 여행</div>
+    <div class="result-sub" id="result-sub">감성 맛집 + 카페 + 야경 코스</div>
+    <div class="result-tags" id="result-tags">
+      <span class="result-tag">🚇 대중교통</span>
+      <span class="result-tag">💑 커플 여행</span>
+      <span class="result-tag">🍽️ 맛집 중심</span>
+    </div>
+  </div>
+
+  <div class="result-body has-nav">
+
+    <!-- 요약 카드 -->
+    <div class="summary-card" style="margin-top:20px;">
+      <div class="summary-item"><label>여행 지역</label><span id="r-region">서울</span></div>
+      <div class="summary-item"><label>여행 기간</label><span id="r-period">2박 3일</span></div>
+      <div class="summary-item"><label>여행 스타일</label><span id="r-style">감성 / 맛집</span></div>
+      <div class="summary-item"><label>이동수단</label><span id="r-transport">대중교통</span></div>
+    </div>
+
+    <!-- DAY 1 -->
+    <div class="day-card">
+      <div class="day-header">
+        DAY 1 <span class="day-header-sub">종로·익선동 코스</span>
+      </div>
+
+      <div class="place-item" onclick="showToast('경복궁 상세 정보')">
+        <div class="time-col">10:00</div>
+        <div class="place-thumb">🏯</div>
+        <div class="place-info">
+          <span class="place-cat">관광</span>
+          <div class="place-name">경복궁</div>
+          <div class="place-meta">서울 종로구 · 예상 1시간 30분<br/>가까운 역: 경복궁역 3번 출구</div>
+        </div>
+      </div>
+      <div class="arrow-row">
+        <span class="arrow-dot">↓</span>
+        <span class="arrow-info">도보 <b>10분</b></span>
+      </div>
+
+      <div class="place-item" onclick="showToast('북촌한옥마을 상세 정보')">
+        <div class="time-col">12:00</div>
+        <div class="place-thumb">🏘️</div>
+        <div class="place-info">
+          <span class="place-cat">사진 명소</span>
+          <div class="place-name">북촌한옥마을</div>
+          <div class="place-meta">서울 종로구 · 예상 1시간<br/>포토스팟 · 한복 체험 가능</div>
+        </div>
+      </div>
+      <div class="arrow-row">
+        <span class="arrow-dot">↓</span>
+        <span class="arrow-info">도보 <b>5분</b></span>
+      </div>
+
+      <div class="place-item" onclick="showToast('익선동 맛집 상세 정보')">
+        <div class="time-col">13:30</div>
+        <div class="place-thumb">🍜</div>
+        <div class="place-info">
+          <span class="place-cat">맛집</span>
+          <div class="place-name">익선동 한식 맛집</div>
+          <div class="place-meta">익선동 골목 · 1인 15,000원대<br/>데이트 코스 추천 · 웨이팅 있음</div>
+        </div>
+      </div>
+      <div class="arrow-row">
+        <span class="arrow-dot">↓</span>
+        <span class="arrow-info">도보 <b>3분</b></span>
+      </div>
+
+      <div class="place-item" onclick="showToast('감성 카페 상세 정보')">
+        <div class="time-col">15:00</div>
+        <div class="place-thumb">☕</div>
+        <div class="place-info">
+          <span class="place-cat">카페</span>
+          <div class="place-name">익선동 감성 카페</div>
+          <div class="place-meta">한옥 분위기 · 사진 찍기 좋음<br/>아메리카노 6,000원대</div>
+        </div>
+      </div>
+      <div class="arrow-row">
+        <span class="arrow-dot">↓</span>
+        <span class="arrow-info">지하철 <b>25분</b> · 4호선</span>
+      </div>
+
+      <div class="place-item" onclick="showToast('남산서울타워 상세 정보')">
+        <div class="time-col">17:00</div>
+        <div class="place-thumb">🗼</div>
+        <div class="place-info">
+          <span class="place-cat">야경 명소</span>
+          <div class="place-name">남산서울타워</div>
+          <div class="place-meta">서울 중구 · 야경 포인트<br/>케이블카 이용 추천</div>
+        </div>
+      </div>
+      <div class="arrow-row">
+        <span class="arrow-dot">↓</span>
+        <span class="arrow-info">택시 <b>15분</b> · 약 9,000원</span>
+      </div>
+
+      <div class="place-item" onclick="showToast('명동 저녁식사 상세 정보')">
+        <div class="time-col">19:00</div>
+        <div class="place-thumb">🍖</div>
+        <div class="place-info">
+          <span class="place-cat">저녁 식사</span>
+          <div class="place-name">명동 저녁식사</div>
+          <div class="place-meta">명동거리 · 삼겹살 / 곱창 추천<br/>1인 20,000원대</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 2 -->
+    <div class="day-card">
+      <div class="day-header">
+        DAY 2 <span class="day-header-sub">성수·한강 코스</span>
+      </div>
+
+      <div class="place-item" onclick="showToast('성수동 카페거리 상세 정보')">
+        <div class="time-col">10:00</div>
+        <div class="place-thumb">🏭</div>
+        <div class="place-info">
+          <span class="place-cat">카페</span>
+          <div class="place-name">성수동 카페거리</div>
+          <div class="place-meta">서울 성동구 · 인스타 감성<br/>카페 투어 1~2시간</div>
+        </div>
+      </div>
+      <div class="arrow-row">
+        <span class="arrow-dot">↓</span>
+        <span class="arrow-info">도보 <b>15분</b></span>
+      </div>
+
+      <div class="place-item" onclick="showToast('서울숲 상세 정보')">
+        <div class="time-col">12:00</div>
+        <div class="place-thumb">🌳</div>
+        <div class="place-info">
+          <span class="place-cat">자연</span>
+          <div class="place-name">서울숲 산책</div>
+          <div class="place-meta">반려동물 동반 가능 · 무료입장<br/>피크닉 추천 코스</div>
+        </div>
+      </div>
+      <div class="arrow-row">
+        <span class="arrow-dot">↓</span>
+        <span class="arrow-info">도보 <b>5분</b></span>
+      </div>
+
+      <div class="place-item" onclick="showToast('성수 맛집 상세 정보')">
+        <div class="time-col">13:30</div>
+        <div class="place-thumb">🍔</div>
+        <div class="place-info">
+          <span class="place-cat">맛집</span>
+          <div class="place-name">성수 브런치 맛집</div>
+          <div class="place-meta">1인 18,000원대 · SNS 인기<br/>웨이팅 예약 추천</div>
+        </div>
+      </div>
+      <div class="arrow-row">
+        <span class="arrow-dot">↓</span>
+        <span class="arrow-info">지하철 <b>20분</b></span>
+      </div>
+
+      <div class="place-item" onclick="showToast('한강공원 상세 정보')">
+        <div class="time-col">16:00</div>
+        <div class="place-thumb">🌅</div>
+        <div class="place-info">
+          <span class="place-cat">힐링</span>
+          <div class="place-name">한강공원</div>
+          <div class="place-meta">뚝섬 또는 반포 한강공원<br/>치킨 + 한강뷰 추천</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 추천 동선 -->
+    <div class="route-card">
+      <div class="route-title">📍 오늘의 추천 동선</div>
+      <div class="route-flow">
+        <span class="route-node">경복궁</span>
+        <span class="route-arrow">→</span>
+        <span class="route-node">북촌</span>
+        <span class="route-arrow">→</span>
+        <span class="route-node">익선동</span>
+        <span class="route-arrow">→</span>
+        <span class="route-node">남산</span>
+        <span class="route-arrow">→</span>
+        <span class="route-node">명동</span>
+      </div>
+    </div>
+
+    <!-- 액션 버튼 -->
+    <div class="action-row">
+      <button class="action-btn primary" onclick="showToast('일정이 저장되었습니다.')">💾 저장</button>
+      <button class="action-btn out" onclick="goInput()">🔄 다시 만들기</button>
+      <button class="action-btn gray" onclick="showToast('공유 링크가 복사되었습니다.')">🔗 공유</button>
+    </div>
+
+  </div>
+
+  <!-- 하단 내비 -->
+  <nav class="bottom-nav">
+    <button class="nav-item" onclick="goPage('p-intro')"><span class="icon">🏠</span>홈</button>
+    <button class="nav-item active"><span class="icon">✈️</span>플랜</button>
+    <button class="nav-item" onclick="showToast('저장한 플랜이 없습니다.')"><span class="icon">📋</span>저장</button>
+    <button class="nav-item" onclick="showToast('마이페이지 준비 중입니다.')"><span class="icon">👤</span>마이페이지</button>
+  </nav>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── 선택 상태 저장
+const state = { region:'', with:'', transport:'', budget:'' };
+
+function goPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function goInput() {
+  goPage('p-input');
+  setTimeout(updateProgress, 100);
+}
+
+function selectOne(el, group) {
+  document.querySelectorAll('#' + group + '-chips .chip')
+    .forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  state[group] = el.textContent.replace(/[^\w가-힣]/g,'').trim();
+  updateProgress();
+}
+
+function toggleChip(el) {
+  el.classList.toggle('sel');
+  updateProgress();
+}
+
+function updateProgress() {
+  const fields = [
+    state.region,
+    document.getElementById('date-start').value,
+    state.with,
+    document.querySelectorAll('#style-chips .sel').length > 0,
+    state.transport,
+    document.getElementById('age-sel').value,
+    document.getElementById('mbti-sel').value,
+    state.budget
+  ];
+  const filled = fields.filter(Boolean).length;
+  const pct = Math.round((filled / fields.length) * 100);
+  document.getElementById('progress').style.width = pct + '%';
+}
+
+function makeplan() {
+  // 최소 검증
+  if (!state.region) { showToast('여행 지역을 선택해주세요.'); return; }
+  if (!document.getElementById('date-start').value) { showToast('출발일을 선택해주세요.'); return; }
+
+  // 로딩 화면 진입
+  goPage('p-loading');
+
+  // 결과 화면에 선택값 반영
+  const region = state.region || '서울';
+  const transport = state.transport || '대중교통';
+  const styles = [...document.querySelectorAll('#style-chips .sel')]
+    .map(c => c.textContent.replace(/[🍽️☕🌿📸🏃🏛️🛍️🌊]/g,'').trim()).join(' / ') || '감성 / 맛집';
+  const withPpl = state.with || '';
+  const mbti = document.getElementById('mbti-sel').value;
+
+  document.getElementById('result-title').textContent = region + ' 2박 3일 여행';
+  document.getElementById('r-region').textContent = region;
+  document.getElementById('r-transport').textContent = transport;
+  document.getElementById('r-style').textContent = styles;
+
+  const tags = document.getElementById('result-tags');
+  tags.innerHTML = '';
+  if (transport) tags.innerHTML += `<span class="result-tag">${transport}</span>`;
+  if (withPpl) tags.innerHTML += `<span class="result-tag">${withPpl} 여행</span>`;
+  if (mbti) tags.innerHTML += `<span class="result-tag">MBTI: ${mbti}</span>`;
+
+  // 로딩 단계 애니메이션
+  const steps = document.querySelectorAll('.loading-step');
+  steps.forEach(s => s.style.opacity = '0.4');
+  let i = 0;
+  const iv = setInterval(() => {
+    if (i < steps.length) { steps[i].style.opacity = '1'; i++; }
+    else {
+      clearInterval(iv);
+      setTimeout(() => goPage('p-result'), 600);
+    }
+  }, 700);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
