@@ -410,9 +410,18 @@ body{font-family:"Apple SD Gothic Neo","Malgun Gothic",Arial,sans-serif;color:va
       <div id="plan-map"></div>
     </div>
     <div id="itinerary-container"></div>
+    <div class="section-card" id="hotel-section" style="display:none">
+      <div class="section-title">🏨 숙소 추천</div>
+      <div class="hotel-list" id="hotel-list"></div>
+    </div>
+    <div class="section-card" id="transport-section" style="display:none">
+      <div class="section-title">🚇 교통 정보 <span style="font-size:11px;font-weight:500;color:#6b7280">(서울 출발 기준)</span></div>
+      <div class="transport-list" id="transport-list"></div>
+      <div class="transport-tip" id="transport-tip"></div>
+    </div>
     <div class="action-row">
       <button class="action-btn primary" onclick="showToast(t('toastSaved'))" data-i18n="saveBtn">💾 저장</button>
-      <button class="action-btn out" onclick="goPage('p-input')" data-i18n="remakeBtn">🔄 다시 만들기</button>
+      <button class="action-btn out" onclick="goPage('p-plans')" data-i18n="remakeBtn">🔄 플랜 다시 선택</button>
       <button class="action-btn gray" onclick="showToast(t('toastShared'))" data-i18n="shareBtn">🔗 공유</button>
     </div>
     <nav class="bottom-nav">
