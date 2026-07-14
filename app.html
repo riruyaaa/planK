@@ -383,6 +383,36 @@ body{font-family:"Apple SD Gothic Neo","Malgun Gothic",Arial,sans-serif;color:va
     </div>
   </div>
 </div>
+<div class="modal-overlay" id="add-modal">
+  <div class="modal-box">
+    <div class="modal-title">나 여기도 가고 싶어! 📍</div>
+    <div class="modal-field">
+      <label>장소 이름</label>
+      <input type="text" id="ap-name" placeholder="예) 홍대 입구, 롯데타워...">
+    </div>
+    <div class="modal-field">
+      <label>카테고리</label>
+      <select id="ap-cat" class="ap-select">
+        <option value="sight">🏛️ 관광지</option>
+        <option value="restaurant">🍽️ 맛집</option>
+        <option value="cafe">☕ 카페</option>
+        <option value="nature">🌿 자연</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>아이콘 선택</label>
+      <div class="icon-grid" id="ap-icon-grid"></div>
+    </div>
+    <div class="modal-field">
+      <label>예상 비용 (원, 1인 기준)</label>
+      <input type="number" id="ap-cost" placeholder="예) 15000  |  무료면 0">
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeAddModal()">취소</button>
+      <button class="modal-btn save" onclick="confirmAddPlace()">일정에 추가! ✓</button>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
