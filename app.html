@@ -692,8 +692,10 @@ function renderItinerary(){
     html+=`<div class="day-card">
       <div class="day-header">${t('dayLabel')} ${di+1} <span class="day-header-sub">${sub}</span></div>
       <div class="sortable-list" id="day-list-${di}">`;
+    let dayTotal=0;
     day.forEach((p,pi)=>{
       const name=pn(p), desc=p.desc?(p.desc[lang]||p.desc.ko):'', move=p.move?(p.move[lang]||p.move.ko):'';
+      const c=getC(p); dayTotal+=c;
       const arrowTxt = pi<day.length-1
         ? `↓ ${move}${p.mc?' · <b>'+p.mc+'</b>':''}`
         : `↓ ${t('backToHotel')} · 🏨 ${hotelName}`;
@@ -708,12 +710,19 @@ function renderItinerary(){
             <div class="place-name">${name}</div>
             <div class="place-meta">${desc}${p.note?'<br/>📝 '+p.note:''}</div>
           </div>
+          <span class="place-cost">${fmtW(c)}</span>
           <button class="edit-btn" onclick="openEdit(${di},${pi})">✏️</button>
         </div>
         <div class="arrow-row">${arrowTxt}</div>
       </div>`;
     });
-    html+=`</div></div>`;
+    html+=`</div>
+    <div class="day-budget-bar">
+      <span class="day-budget-label">💸 ${di+1}일 예상 비용</span>
+      <span class="day-budget-amount">${dayTotal===0?'무료':'₩'+dayTotal.toLocaleString()}</span>
+    </div>
+    <button class="add-place-btn" onclick="openAddModal(${di})">나 여기도 가고 싶어! ＋</button>
+    </div>`;
   });
   // Route card
   const d0=currentItinerary[0]||[];
