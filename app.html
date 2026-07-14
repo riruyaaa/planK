@@ -442,6 +442,7 @@ let currentItinerary=[], leafletMap=null, mapVisible=false, editingIdx=null;
 function t(k){ return (I18N[lang]||I18N.ko)[k]||k; }
 function pn(p){ return p.customName||(p[lang]||p.ko); }
 function getDateVal(p){const y=document.getElementById(p+'-y').value,m=document.getElementById(p+'-m').value,d=document.getElementById(p+'-d').value;return y&&m&&d?`${y}-${m}-${d}`:''}
+function calcTripDays(){const s=getDateVal('ds'),e=getDateVal('de');if(!s)return 1;const d=e?Math.round((new Date(e)-new Date(s))/864e5):0;return Math.max(1,d+1);}
 
 // ── LANGUAGE ─────────────────────────────────────────────
 function setLang(l){
