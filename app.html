@@ -34,8 +34,10 @@ body{font-family:"Apple SD Gothic Neo","Malgun Gothic",Arial,sans-serif;color:va
 .chip.multi.sel{background:var(--blue-light);color:var(--blue);border-color:var(--blue)}
 .date-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .date-field{border:1.5px solid var(--line);border-radius:12px;padding:13px;background:var(--white)}
-.date-field label{display:block;font-size:11px;color:var(--sub);margin-bottom:4px}
-.date-field input{border:none;outline:none;width:100%;font-size:14px;font-weight:600;color:var(--ink);background:transparent}
+.date-field label{display:block;font-size:11px;color:var(--sub);margin-bottom:8px}
+.date-selects{display:flex;gap:5px}
+.date-sel{flex:1;border:1.5px solid var(--line);border-radius:8px;padding:8px 2px;font-size:13px;font-weight:600;color:var(--ink);background:var(--white);cursor:pointer;outline:none;-webkit-appearance:none;appearance:none;text-align:center;text-align-last:center}
+.date-sel:focus{border-color:var(--blue)}
 .native-sel{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:13px 16px;font-size:15px;font-weight:600;color:var(--ink);background:var(--white);cursor:pointer;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
 .divider{height:1px;background:var(--line);margin:18px 0}
 .btn-primary{width:100%;padding:17px;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;font-size:16px;font-weight:800;border:none;border-radius:14px;cursor:pointer;margin-top:24px;transition:.15s;box-shadow:0 4px 18px rgba(249,115,22,.35)}
