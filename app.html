@@ -618,14 +618,15 @@ function initSortable(){
       chosenClass:'sortable-chosen',
       dragClass:'sortable-drag',
       onEnd(evt){
-        const {oldIndex,newIndex}=evt;
-        if(oldIndex===newIndex) return;
+        const from=evt.oldIndex, to=evt.newIndex;
+        if(from===to)return;
         const day=currentItinerary[di];
-        const moved=day.splice(oldIndex,1)[0];
-        day.splice(newIndex,0,moved);
+        const moved=day.splice(from,1)[0];
+        day.splice(to,0,moved);
         recalcTimes(day);
         renderItinerary();
-        if(mapVisible) initMap();
+        if(mapVisible)initMap();
+        showToast('⏱ 시간이 자동으로 계산됐어요');
       }
     });
   });
