@@ -688,6 +688,213 @@ function updateResultHeader(){
 }
 
 // ── RENDER ────────────────────────────────────────────────
+// ── HOTELS ───────────────────────────────────────────────
+const HOTELS={
+  '서울':[
+    {icon:'🏠',name:'명동 게스트하우스',price:55000,tags:['도보 5분','공용 욕실','조용한 위치'],tier:'save'},
+    {icon:'🏨',name:'이비스 앰배서더 명동',price:150000,tags:['명동 중심','조식 가능','4성급'],tier:'normal',rec:true},
+    {icon:'🏩',name:'롯데호텔 서울',price:420000,tags:['광화문 뷰','루프탑 바','5성급'],tier:'luxury'},
+  ],
+  '부산':[
+    {icon:'🏠',name:'해운대 비치 게스트하우스',price:45000,tags:['해운대 도보 5분','공용 욕실'],tier:'save'},
+    {icon:'🏨',name:'파라다이스 호텔 해운대',price:180000,tags:['바다뷰','조식 포함','4성급'],tier:'normal',rec:true},
+    {icon:'🏩',name:'해운대 그랜드 호텔',price:350000,tags:['오션뷰 스위트','인피니티 풀','5성급'],tier:'luxury'},
+  ],
+  '제주':[
+    {icon:'🏠',name:'제주 에어비앤비 한옥',price:60000,tags:['감성 한옥','전용 마당','렌터카 필수'],tier:'save'},
+    {icon:'🏨',name:'제주 신라 호텔',price:250000,tags:['중문 위치','조식 포함','5성급'],tier:'normal',rec:true},
+    {icon:'🏩',name:'파라다이스 제주 아일랜드',price:420000,tags:['오션뷰','워터파크 포함','5성급'],tier:'luxury'},
+  ],
+  '강릉':[
+    {icon:'🏠',name:'경포해변 펜션',price:80000,tags:['바다 도보 3분','전용 바베큐','전체 대여'],tier:'save'},
+    {icon:'🏨',name:'씨마크 호텔 강릉',price:180000,tags:['오션뷰','조식 포함','4성급'],tier:'normal',rec:true},
+    {icon:'🏩',name:'세인트존스 호텔',price:300000,tags:['스파 포함','전망대 조식','5성급'],tier:'luxury'},
+  ],
+  '경주':[
+    {icon:'🏠',name:'황리단길 한옥 게스트하우스',price:40000,tags:['황리단길 도보 2분','한옥 체험'],tier:'save'},
+    {icon:'🏨',name:'힐튼 경주',price:150000,tags:['보문관광단지','조식 포함','4성급'],tier:'normal',rec:true},
+    {icon:'🏩',name:'경주 현대호텔',price:250000,tags:['보문호 뷰','골프장','5성급'],tier:'luxury'},
+  ],
+  '여수':[
+    {icon:'🏠',name:'여수 돌산 펜션',price:70000,tags:['여수 야경 뷰','한적한 위치'],tier:'save'},
+    {icon:'🏨',name:'히든베이 호텔 여수',price:180000,tags:['바다뷰','조식 포함','4성급'],tier:'normal',rec:true},
+    {icon:'🏩',name:'디오션 리조트',price:350000,tags:['오션스위트','인피니티 풀','5성급'],tier:'luxury'},
+  ],
+  '전주':[
+    {icon:'🏠',name:'전주한옥마을 고택 민박',price:50000,tags:['한옥마을 내','한복 대여 무료'],tier:'save'},
+    {icon:'🏨',name:'라한 호텔 전주',price:120000,tags:['시내 중심','조식 포함','4성급'],tier:'normal',rec:true},
+    {icon:'🏩',name:'조이 선밸리 호텔',price:220000,tags:['전주 야경 뷰','스파','5성급'],tier:'luxury'},
+  ],
+  '속초':[
+    {icon:'🏠',name:'속초 청초호 펜션',price:70000,tags:['호수뷰','조용한 위치'],tier:'save'},
+    {icon:'🏨',name:'속초 스카이베이 호텔',price:150000,tags:['오션뷰','조식 포함','4성급'],tier:'normal',rec:true},
+    {icon:'🏩',name:'속초 마레몬스 호텔',price:280000,tags:['설악산 뷰','스파','5성급'],tier:'luxury'},
+  ],
+};
+
+// ── TRANSPORT ─────────────────────────────────────────────
+const TRANSPORT={
+  '서울':[
+    {icon:'🚇',name:'지하철',detail:'서울 전 지역 연결',price:'₩1,400~'},
+    {icon:'🚌',name:'시내버스',detail:'심야버스 운영',price:'₩1,200~'},
+  ],
+  '부산':[
+    {icon:'🚄',name:'KTX',detail:'서울역 → 부산역 · 2시간 30분',price:'₩59,800'},
+    {icon:'🚌',name:'고속버스',detail:'강남터미널 → 부산 · 4시간',price:'₩30,000'},
+  ],
+  '제주':[
+    {icon:'✈️',name:'항공',detail:'김포/인천 → 제주 · 1시간 10분',price:'₩60,000~'},
+    {icon:'⛴️',name:'여객선',detail:'목포/완도 → 제주 · 4~13시간',price:'₩30,000~'},
+  ],
+  '강릉':[
+    {icon:'🚄',name:'KTX',detail:'청량리역 → 강릉역 · 1시간 55분',price:'₩27,600'},
+    {icon:'🚌',name:'고속버스',detail:'동서울터미널 → 강릉 · 2시간 30분',price:'₩18,000'},
+  ],
+  '경주':[
+    {icon:'🚄',name:'KTX',detail:'서울역 → 신경주역 · 2시간 15분',price:'₩57,300'},
+    {icon:'🚌',name:'고속버스',detail:'강남터미널 → 경주 · 3시간 30분',price:'₩26,400'},
+  ],
+  '여수':[
+    {icon:'🚄',name:'KTX',detail:'용산역 → 여수엑스포역 · 2시간 40분',price:'₩48,800'},
+    {icon:'🚌',name:'고속버스',detail:'강남터미널 → 여수 · 3시간 40분',price:'₩26,000'},
+  ],
+  '전주':[
+    {icon:'🚄',name:'KTX',detail:'용산역 → 전주역 · 1시간 20분',price:'₩28,600'},
+    {icon:'🚌',name:'고속버스',detail:'강남터미널 → 전주 · 2시간 30분',price:'₩14,000'},
+  ],
+  '속초':[
+    {icon:'🚌',name:'고속버스',detail:'동서울터미널 → 속초 · 2시간 30분',price:'₩17,600'},
+    {icon:'🚗',name:'자가용',detail:'서울 → 속초 · 약 2시간 30분',price:'통행료 ₩5,000~'},
+  ],
+};
+const TRANSPORT_TIPS={
+  '서울':'🗺️ T-money 카드 하나면 지하철·버스 모두 OK! 교통앱은 카카오맵 추천',
+  '부산':'🚗 해운대↔서면은 지하철 2호선이 제일 편해요. 렌터카 없어도 충분!',
+  '제주':'🚗 제주는 렌터카 필수! 공항에서 미리 예약하면 저렴해요. 대중교통은 불편.',
+  '강릉':'🚄 KTX 강릉역에서 시내버스 or 택시로 이동. 카카오T 앱 필수!',
+  '경주':'🚲 경주 시내는 자전거 대여가 짱! 신경주역↔시내 택시 약 ₩10,000',
+  '여수':'🚢 여수엑스포역에서 시내까지 도보 가능. 밤바다 야경은 택시 추천!',
+  '전주':'🚶 전주한옥마을은 도보 여행 최고! 터미널에서 시내 버스 ₩1,200',
+  '속초':'🚌 속초 시외버스터미널에서 설악산까지 버스 30분. 속초 시내는 도보 가능',
+};
+
+// ── PLAN THEMES ───────────────────────────────────────────
+const PLAN_THEMES=[
+  {key:'food',icon:'🍽️',name:'맛집·카페 투어',desc:'먹고 마시는 게 여행의 전부!',badge:'인기 1위',color:'#f97316',bg:'linear-gradient(135deg,#fff7ed,#ffedd5)',catOrder:['restaurant','cafe','sight','nature']},
+  {key:'culture',icon:'🏛️',name:'명소·문화 탐방',desc:'유명 관광지와 역사 속으로',badge:'강력 추천',color:'#1d4ed8',bg:'linear-gradient(135deg,#eff6ff,#dbeafe)',catOrder:['sight','nature','restaurant','cafe']},
+  {key:'healing',icon:'🌿',name:'힐링·여유 여행',desc:'자연과 카페로 충전하는 여행',badge:'힐링 추천',color:'#059669',bg:'linear-gradient(135deg,#ecfdf5,#d1fae5)',catOrder:['nature','cafe','sight','restaurant']},
+];
+let generatedPlans=[];
+
+function generatePlans(){
+  const rd=RD[state.region]; if(!rd) return [];
+  const tripDays=calcTripDays();
+  const availDays=rd.days.length;
+  return PLAN_THEMES.map(theme=>{
+    const days=Array.from({length:tripDays},(_,i)=>{
+      let src;
+      if(tripDays<=availDays){
+        src=rd.days[i].map(p=>({...p,note:'',customName:''}));
+      } else {
+        const pool=rd.days.flat().map(p=>({...p,note:'',customName:''}));
+        const perDay=Math.max(4,Math.ceil(pool.length/tripDays));
+        src=Array.from({length:perDay},(__,j)=>({...pool[(i*perDay+j)%pool.length]}));
+      }
+      const sorted=[...src].sort((a,b)=>theme.catOrder.indexOf(a.cat)-theme.catOrder.indexOf(b.cat));
+      if(sorted.length>0)sorted[0].time='09:00';
+      recalcTimes(sorted);
+      return sorted;
+    });
+    const allPlaces=days.flat();
+    const topCat=theme.catOrder[0];
+    const highlights=allPlaces.filter(p=>p.cat===topCat||p.cat===theme.catOrder[1]).slice(0,3).map(p=>p.ko);
+    if(highlights.length<3) allPlaces.slice(0,3-highlights.length).forEach(p=>highlights.push(p.ko));
+    const totalBudget=allPlaces.reduce((s,p)=>s+getC(p),0);
+    return {...theme,days,highlights,totalBudget};
+  });
+}
+
+function showPlans(){
+  generatedPlans=generatePlans();
+  const region=RD[state.region];
+  const rn=region?region[lang]||region.ko:state.region;
+  const tripDays=calcTripDays();
+  const nights=tripDays-1;
+  const container=document.getElementById('plan-cards');
+  container.innerHTML=generatedPlans.map((plan,idx)=>`
+    <div class="plan-card" onclick="selectPlan(${idx})">
+      <div class="plan-card-head" style="background:${plan.bg}">
+        <div class="plan-card-icon" style="background:${plan.color}20">${plan.icon}</div>
+        <div class="plan-card-title">
+          <div class="plan-card-name">${plan.name}</div>
+          <div class="plan-card-desc">${plan.desc}</div>
+        </div>
+        <span class="plan-badge" style="background:${plan.color}20;color:${plan.color}">${plan.badge}</span>
+      </div>
+      <div class="plan-highlights">
+        ${plan.highlights.map(h=>`<div class="plan-hl" style="--c:${plan.color}">${h}</div>`).join('')}
+      </div>
+      <div class="plan-card-foot">
+        <div>
+          <div class="plan-budget-label">총 예상 비용 (1인)</div>
+          <div class="plan-budget-val" style="color:${plan.color}">₩${plan.totalBudget.toLocaleString()}</div>
+        </div>
+        <button class="plan-select-btn" style="background:${plan.color}">이 플랜으로! →</button>
+      </div>
+    </div>
+  `).join('');
+  goPage('p-plans');
+}
+
+function selectPlan(idx){
+  const plan=generatedPlans[idx];
+  currentItinerary=plan.days;
+  goPage('p-result'); updateResultHeader(); renderItinerary(); renderHotels(); renderTransport();
+  mapVisible=false; document.getElementById('plan-map').classList.remove('show');
+  document.getElementById('map-toggle-btn').textContent=t('mapShow');
+  if(leafletMap){leafletMap.remove();leafletMap=null;}
+}
+
+function renderHotels(){
+  const hotels=HOTELS[state.region]; if(!hotels) return;
+  const section=document.getElementById('hotel-section');
+  section.style.display='block';
+  document.getElementById('hotel-list').innerHTML=hotels.map(h=>`
+    <div class="hotel-item${h.rec?' recommended':''}">
+      <div class="hotel-icon">${h.icon}</div>
+      <div class="hotel-info">
+        <div class="hotel-name">${h.name}</div>
+        <div class="hotel-tags">
+          ${h.rec?'<span class="hotel-tag rec">✨ 추천</span>':''}
+          ${h.tags.map(t=>`<span class="hotel-tag">${t}</span>`).join('')}
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div class="hotel-price">₩${h.price.toLocaleString()}</div>
+        <div class="hotel-night">/박</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderTransport(){
+  const tr=TRANSPORT[state.region]; if(!tr) return;
+  const tip=TRANSPORT_TIPS[state.region]||'';
+  const section=document.getElementById('transport-section');
+  section.style.display='block';
+  document.getElementById('transport-list').innerHTML=tr.map(t=>`
+    <div class="transport-item">
+      <div class="transport-icon">${t.icon}</div>
+      <div class="transport-info">
+        <div class="transport-name">${t.name}</div>
+        <div class="transport-detail">${t.detail}</div>
+      </div>
+      <div class="transport-price">${t.price}</div>
+    </div>
+  `).join('');
+  document.getElementById('transport-tip').textContent=tip;
+}
+
 // ── COSTS ────────────────────────────────────────────────
 const COSTS={
   '경복궁':3000,'북촌한옥마을':0,'토속촌 삼계탕':18000,'익선동 감성카페':8000,'남산서울타워':21000,'명동교자':12000,
