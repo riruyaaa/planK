@@ -475,7 +475,7 @@ function calcProgress(){
 // ── PLAN ─────────────────────────────────────────────────
 function makePlan(){
   if(!state.region){ showToast(t('toastRegion')); return; }
-  if(!document.getElementById('date-start').value){ showToast(t('toastDate')); return; }
+  if(!getDateVal('ds')){ showToast(t('toastDate')); return; }
   goPage('p-loading');
   const steps=document.querySelectorAll('.ld-step');
   steps.forEach(s=>s.classList.remove('on'));
