@@ -497,7 +497,7 @@ function updateResultHeader(){
   const sn=[...document.querySelectorAll('#style-chips .sel')].map(c=>t('s.'+c.dataset.style)).join(' · ');
   document.getElementById('r-sub').textContent=sn||(lang==='ko'?'맞춤 여행 코스':lang==='en'?'Custom Travel Course':lang==='zh'?'定制旅行路线':'カスタム旅行コース');
   document.getElementById('r-region').textContent=rn;
-  const s=document.getElementById('date-start').value,e=document.getElementById('date-end').value;
+  const s=getDateVal('ds'),e=getDateVal('de');
   document.getElementById('r-period').textContent=s&&e?`${s} ~ ${e}`:`${days}${lang==='ko'?'일':lang==='ja'?'日':'天'}`;
   document.getElementById('r-style').textContent=sn||'-';
   const trM={public:t('tr.public'),car:t('tr.car'),taxi:t('tr.taxi'),walk:t('tr.walk')};
