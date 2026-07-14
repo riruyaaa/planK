@@ -414,13 +414,15 @@ body{font-family:"Apple SD Gothic Neo","Malgun Gothic",Arial,sans-serif;color:va
       <div class="sum-item"><label data-i18n="sumStyle">여행 스타일</label><span id="r-style">-</span></div>
       <div class="sum-item"><label data-i18n="sumTransport">이동수단</label><span id="r-transport">-</span></div>
     </div>
-    <div class="budget-card" id="budget-card" style="display:none">
-      <div class="budget-card-icon">💰</div>
-      <div class="budget-card-info">
-        <div class="budget-card-label">총 예상 여행 예산 (1인)</div>
-        <div class="budget-card-val" id="budget-total">-</div>
-        <div class="budget-card-sub" id="budget-sub"></div>
+    <div class="cost-breakdown" id="cost-breakdown" style="display:none">
+      <div class="cost-head">
+        <div>
+          <div class="cost-head-label">💰 총 예상 여행 경비 (1인)</div>
+          <div class="cost-head-sub" id="cost-head-sub">활동비 + 숙박비 + 교통비</div>
+        </div>
+        <div id="cost-head-total" style="font-size:26px;font-weight:900;line-height:1">-</div>
       </div>
+      <div class="cost-rows" id="cost-rows"></div>
     </div>
     <div class="map-section">
       <div class="map-header" onclick="toggleMap()">
