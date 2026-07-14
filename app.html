@@ -809,24 +809,39 @@ function generatePlans(){
   const tripDays=calcTripDays();
   const availDays=rd.days.length;
   return PLAN_THEMES.map(theme=>{
+    // Build theme-sorted pool (no cycling — each place appears ONCE)
+    const fullPool=rd.days.flat().map(p=>({...p,note:'',customName:''}));
+    const catRank=p=>{const i=theme.catOrder.indexOf(p.cat);return i<0?99:i;};
+    const sortedPool=[...fullPool].sort((a,b)=>catRank(a)-catRank(b));
     const days=Array.from({length:tripDays},(_,i)=>{
-      let src;
+      let dayPlaces;
       if(tripDays<=availDays){
-        src=rd.days[i].map(p=>({...p,note:'',customName:''}));
+        // Use separate day data — no overlap between days
+        dayPlaces=rd.days[i].map(p=>({...p,note:'',customName:''}));
+        dayPlaces.sort((a,b)=>catRank(a)-catRank(b));
       } else {
-        const pool=rd.days.flat().map(p=>({...p,note:'',customName:''}));
-        const perDay=Math.max(4,Math.ceil(pool.length/tripDays));
-        src=Array.from({length:perDay},(__,j)=>({...pool[(i*perDay+j)%pool.length]}));
+        // Distribute pool evenly across days WITHOUT modulo cycling
+        const perDay=Math.max(3,Math.ceil(sortedPool.length/tripDays));
+        const start=i*perDay;
+        dayPlaces=sortedPool.slice(start,start+perDay).map(p=>({...p}));
+        if(dayPlaces.length===0){
+          dayPlaces=[{time:'09:00',icon:'🗺️',cat:'sight',ko:'자유 탐험의 날',en:'Free Day',zh:'自由游览',ja:'自由旅行',
+            coords:null,ribbon:0,desc:{ko:'이 날은 자유롭게! 가고 싶은 곳을 직접 추가해보세요.',en:'Free day! Add your own spots.'},
+            move:{ko:'자유',en:'Free'},mc:'',note:'',customName:'',cost:0}];
+        }
       }
-      const sorted=[...src].sort((a,b)=>theme.catOrder.indexOf(a.cat)-theme.catOrder.indexOf(b.cat));
-      if(sorted.length>0)sorted[0].time='09:00';
-      recalcTimes(sorted);
-      return sorted;
+      if(dayPlaces.length>0)dayPlaces[0].time='09:00';
+      recalcTimes(dayPlaces);
+      return dayPlaces;
     });
     const allPlaces=days.flat();
-    const topCat=theme.catOrder[0];
-    const highlights=allPlaces.filter(p=>p.cat===topCat||p.cat===theme.catOrder[1]).slice(0,3).map(p=>p.ko);
-    if(highlights.length<3) allPlaces.slice(0,3-highlights.length).forEach(p=>highlights.push(p.ko));
+    const highlights=[];
+    for(const cat of theme.catOrder){
+      const found=allPlaces.find(p=>p.cat===cat&&!highlights.includes(p.ko));
+      if(found)highlights.push(found.ko);
+      if(highlights.length>=3)break;
+    }
+    while(highlights.length<3){const f=allPlaces.find(p=>!highlights.includes(p.ko));if(!f)break;highlights.push(f.ko);}
     const totalBudget=allPlaces.reduce((s,p)=>s+getC(p),0);
     return {...theme,days,highlights,totalBudget};
   });
