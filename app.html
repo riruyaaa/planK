@@ -618,6 +618,57 @@ function updateResultHeader(){
 }
 
 // ── RENDER ────────────────────────────────────────────────
+// ── COSTS ────────────────────────────────────────────────
+const COSTS={
+  '경복궁':3000,'북촌한옥마을':0,'토속촌 삼계탕':18000,'익선동 감성카페':8000,'남산서울타워':21000,'명동교자':12000,
+  '성수동 카페거리':8000,'서울숲':0,'다미 왕갈비':35000,'한강공원 뚝섬':5000,
+  '해운대 해수욕장':0,'해운대 암소갈비집':30000,'감천문화마을':2000,'광안리 & 광안대교':5000,'수변최씨밀면':9000,
+  '자갈치시장':0,'삼진어묵 본점':10000,'용두산공원·부산타워':12000,'송도해수욕장':0,'민락 횟집거리':25000,
+  '성산일출봉':5000,'돈사돈':20000,'협재해수욕장':0,'카페 신산리1924':8000,'제주 옥돔식당':25000,
+  '오설록 티뮤지엄':0,'중문색달해변':0,'서귀포 현지 흑돼지':18000,'천제연폭포':2500,'용머리해안':3000,
+  '보헤미안 로스터스':8000,'경포해변':0,'교동반점':8000,'오죽헌':3000,'사근진 해물탕':35000,
+  '정동진 해돋이':0,'주문진 수산시장':15000,'주문진해수욕장':0,'테라로사 커피공장':9000,'주문진 오징어 한상':20000,
+  '불국사':6000,'첨성대':2000,'요석궁':30000,'황리단길':10000,'동궁과 월지':3000,
+  '석굴암':6000,'교촌마을':0,'경주 교동법주 한정식':25000,'국립경주박물관':0,'경주 대릉원 야간 산책':3000,
+  '여수 해상케이블카':15000,'여수돌게장':30000,'오동도':3000,'돌산대교 야경':0,'낭만포차거리':20000,
+  '향일암 일출':2000,'돌산공원':0,'여수 게장백반':15000,'이순신광장·거북선':0,'여수 밤바다 해산물':25000,
+  '전주한옥마을':0,'고궁':15000,'PNB풍년제과':5000,'경기전':3000,'삼백집':8000,
+  '전동성당':0,'전주 공예품전시관':2000,'현대옥 콩나물국밥':9000,'완산칠봉·꽃동산':0,'전주 막걸리 골목':15000,
+  '설악산 국립공원':4000,'속초 중앙시장 닭강정':8000,'청초호 수변공원':0,'대포항 대게·물회':40000,
+  '영금정':0,'아바이마을':0,'함흥냉면 전문점':10000,'속초 오징어순대·물회':20000
+};
+function getC(p){ return p.cost!==undefined?p.cost:(COSTS[p.ko]!==undefined?COSTS[p.ko]:0); }
+function fmtW(n){ return n===0?'무료':'₩'+n.toLocaleString(); }
+
+// ── ADD PLACE ─────────────────────────────────────────────
+const AP_ICONS=['🏯','⛩️','🏛️','🏘️','🎨','🛍️','🎭','🌊','🌅','🏔️','🌳','🌸','🌺','☕','🍜','🍖','🥩','🍣','🍱','🍺','🍦','🎢','🚢','⛴️'];
+let addTargetDay=-1, apIcon='🏛️';
+function openAddModal(di){
+  addTargetDay=di; apIcon='🏛️';
+  document.getElementById('ap-name').value='';
+  document.getElementById('ap-cat').value='sight';
+  document.getElementById('ap-cost').value='';
+  document.getElementById('ap-icon-grid').innerHTML=AP_ICONS.map(ic=>`<div class="icon-opt${ic===apIcon?' sel':''}" onclick="pickApIcon(this,'${ic}')">${ic}</div>`).join('');
+  document.getElementById('add-modal').classList.add('open');
+}
+function closeAddModal(){ document.getElementById('add-modal').classList.remove('open'); }
+function pickApIcon(el,ico){ document.querySelectorAll('#ap-icon-grid .icon-opt').forEach(b=>b.classList.remove('sel')); el.classList.add('sel'); apIcon=ico; }
+function confirmAddPlace(){
+  const name=document.getElementById('ap-name').value.trim();
+  if(!name){showToast('장소 이름을 입력해주세요 😊');return;}
+  const cat=document.getElementById('ap-cat').value;
+  const cost=parseInt(document.getElementById('ap-cost').value)||0;
+  const day=currentItinerary[addTargetDay];
+  const last=day[day.length-1];
+  const newTime=last?toTimeStr(toMins(last.time)+getStayMins(last.cat)+30):'09:00';
+  day.push({time:newTime,icon:apIcon,cat,ko:name,en:name,zh:name,ja:name,coords:null,ribbon:0,
+    desc:{ko:'내가 추가한 장소',en:'Added by me',zh:'我添加的地点',ja:'追加スポット'},
+    move:{ko:'이동',en:'Travel',zh:'移动',ja:'移動'},mc:'',note:'',customName:'',cost});
+  if(cost) COSTS[name]=cost;
+  closeAddModal(); renderItinerary(); initSortable();
+  showToast('✅ 일정에 추가됐어요!');
+}
+
 const DAY_SUBS={
   '서울':['종로·익선동·남산 코스','성수·한강·명동 코스','홍대·DDP·북촌 코스','강남·이태원·한강 코스'],
   '부산':['해운대·감천·광안리 코스','남포동·국제시장·용두산 코스','기장·오시리아 코스'],
