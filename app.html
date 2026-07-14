@@ -578,6 +578,12 @@ function initMap(){
   if(coords.length>1) leafletMap.fitBounds(coords,{padding:[20,20]});
 }
 
+// ── TIME RECALC ──────────────────────────────────────────
+function extractTravelMin(p){const m=(p.move&&p.move.ko)||'';const r=m.match(/(\d+)분/);return r?parseInt(r[1]):30}
+function stayMin(cat){return cat==='restaurant'||cat==='cafe'?60:90}
+function addMin(t,m){const[h,mn]=t.split(':').map(Number);const tot=h*60+mn+m;return`${String(Math.floor(tot/60)%24).padStart(2,'0')}:${String(tot%60).padStart(2,'0')}`}
+function recalcTimes(day){for(let i=1;i<day.length;i++){day[i].time=addMin(day[i-1].time,stayMin(day[i-1].cat)+extractTravelMin(day[i-1]))}}
+
 // ── DRAG & DROP ──────────────────────────────────────────
 function initSortable(){
   currentItinerary.forEach((_,di)=>{
