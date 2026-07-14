@@ -615,6 +615,12 @@ function updateResultHeader(){
   if(state.with) tags.innerHTML+=`<span class="result-tag">${wM[state.with]}</span>`;
   const mbti=document.getElementById('mbti-sel').value;
   if(mbti) tags.innerHTML+=`<span class="result-tag">MBTI: ${mbti}</span>`;
+  // Total budget
+  const totalBudget=currentItinerary.flat().reduce((s,p)=>s+getC(p),0);
+  const bc=document.getElementById('budget-card');
+  bc.style.display='flex';
+  document.getElementById('budget-total').textContent='₩'+totalBudget.toLocaleString();
+  document.getElementById('budget-sub').textContent=`1인 기준 · ${days}일 총 ${currentItinerary.flat().length}개 장소`;
 }
 
 // ── RENDER ────────────────────────────────────────────────
