@@ -54,21 +54,25 @@ section{padding:80px 24px}
 /* ── HERO */
 #hero{
   padding:140px 24px 100px;
-  background:linear-gradient(160deg,#0f172a 0%,#1e3a8a 45%,#4c1d95 100%);
+  background:linear-gradient(160deg,#050d2d 0%,#0f1f6b 25%,#1e3a8a 55%,#0c4a6e 80%,#0d6656 100%);
   position:relative;overflow:hidden;
 }
 #hero::before{
   content:"";position:absolute;
-  width:800px;height:800px;border-radius:50%;
-  background:radial-gradient(circle,rgba(99,102,241,.25) 0%,transparent 70%);
-  top:-300px;right:-200px;
+  width:900px;height:900px;border-radius:50%;
+  background:radial-gradient(circle,rgba(249,115,22,.18) 0%,rgba(99,102,241,.2) 45%,transparent 70%);
+  top:-350px;right:-250px;
+  animation:orbFloat1 14s ease-in-out infinite alternate;
 }
 #hero::after{
   content:"";position:absolute;
-  width:500px;height:500px;border-radius:50%;
-  background:radial-gradient(circle,rgba(37,99,235,.2) 0%,transparent 70%);
-  bottom:-200px;left:-100px;
+  width:650px;height:650px;border-radius:50%;
+  background:radial-gradient(circle,rgba(13,148,136,.25) 0%,rgba(37,99,235,.18) 50%,transparent 70%);
+  bottom:-280px;left:-160px;
+  animation:orbFloat2 18s ease-in-out infinite alternate;
 }
+@keyframes orbFloat1{from{transform:translate(0,0) scale(1);}to{transform:translate(50px,-40px) scale(1.1);}}
+@keyframes orbFloat2{from{transform:translate(0,0) scale(1);}to{transform:translate(-40px,50px) scale(1.12);}}
 .hero-inner{
   max-width:1080px;margin:0 auto;
   display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;
