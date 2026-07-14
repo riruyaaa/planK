@@ -141,6 +141,26 @@ body{font-family:"Apple SD Gothic Neo","Malgun Gothic",Arial,sans-serif;color:va
 .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:.3s;white-space:nowrap;z-index:600}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .leaflet-control-attribution{font-size:9px}
+/* ── DAY PHOTO HEADER ── */
+.day-photo-header{position:relative;height:150px;overflow:hidden;border-radius:16px 16px 0 0;background:linear-gradient(135deg,#0f1f6b,#1d4ed8)}
+.day-photo-img{width:100%;height:100%;object-fit:cover;display:block}
+.day-photo-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.05) 0%,rgba(0,0,0,.72) 100%);display:flex;flex-direction:column;justify-content:flex-end;padding:14px 16px;color:#fff}
+.day-num-badge{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;background:rgba(255,255,255,.2);display:inline-block;padding:3px 10px;border-radius:99px;margin-bottom:5px;width:fit-content}
+.day-photo-title{font-size:18px;font-weight:900;line-height:1.2}
+.day-photo-date{font-size:12px;opacity:.8;margin-top:3px}
+/* ── COST BREAKDOWN ── */
+.cost-breakdown{border-radius:16px;overflow:hidden;box-shadow:0 3px 16px rgba(249,115,22,.2);margin:12px 0 14px}
+.cost-head{background:linear-gradient(135deg,#f97316,#ea580c);padding:16px 18px;color:#fff;display:flex;justify-content:space-between;align-items:flex-end}
+.cost-head-label{font-size:12px;font-weight:700;opacity:.9}
+.cost-head-total{font-size:26px;font-weight:900;line-height:1}
+.cost-head-sub{font-size:11px;opacity:.75;margin-top:2px}
+.cost-rows{background:#fff;padding:6px 0}
+.cost-row{display:flex;align-items:center;justify-content:space-between;padding:11px 18px;border-bottom:1px solid #f9fafb;font-size:13px;gap:8px}
+.cost-row:last-child{border-bottom:none;border-top:2px solid #fed7aa;margin-top:4px;padding-top:13px;font-weight:800;font-size:15px}
+.cost-row-label{color:#6b7280;font-weight:600;flex:1}
+.cost-row-val{font-weight:700;color:#1f2937;white-space:nowrap}
+.cost-row:last-child .cost-row-label{color:#f97316}
+.cost-row:last-child .cost-row-val{color:#f97316}
 /* ── PLAN SELECT PAGE ── */
 #p-plans{background:#f8faff;overflow-y:auto}
 .plans-top{background:linear-gradient(135deg,#0f1f6b,#1d4ed8);padding:20px;color:#fff;text-align:center}
