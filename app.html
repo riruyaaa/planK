@@ -468,7 +468,7 @@ function goPage(id){ document.querySelectorAll('.page').forEach(p=>p.classList.r
 function pick(el,group,val){ document.querySelectorAll(`#${group}-chips .chip`).forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); state[group]=val; calcProgress(); }
 function tog(el){ el.classList.toggle('sel'); calcProgress(); }
 function calcProgress(){
-  const f=[state.region,document.getElementById('date-start').value,state.with,document.querySelectorAll('#style-chips .sel').length>0,state.transport,document.getElementById('age-sel').value,state.budget];
+  const f=[state.region,getDateVal('ds'),state.with,document.querySelectorAll('#style-chips .sel').length>0,state.transport,document.getElementById('age-sel').value,state.budget];
   document.getElementById('progress').style.width=Math.round(f.filter(Boolean).length/f.length*100)+'%';
 }
 
