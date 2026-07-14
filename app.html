@@ -847,6 +847,7 @@ function deleteItem(){
 // ── TOAST ─────────────────────────────────────────────────
 function showToast(msg){ const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),2500); }
 document.getElementById('edit-modal').addEventListener('click',function(e){ if(e.target===this) closeModal(); });
+document.getElementById('add-modal').addEventListener('click',function(e){ if(e.target===this) closeAddModal(); });
 </script>
 </body>
 </html>
