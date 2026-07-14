@@ -849,7 +849,21 @@ function generatePlans(){
       : allP; // fallback to all if pool too small
 
     const catRank=p=>{const i=theme.catOrder.indexOf(p.cat);return i<0?99:i;};
-    const sorted=[...pool].sort((a,b)=>catRank(a)-catRank(b));
+    const sortedByTheme=[...pool].sort((a,b)=>catRank(a)-catRank(b));
+
+    // Interleave categories so each day has a mix (not all restaurants in day1, all sights in day2)
+    const groups={};
+    theme.catOrder.forEach(c=>{groups[c]=[];});
+    sortedByTheme.forEach(p=>{if(groups[p.cat])groups[p.cat].push(p);});
+    const sorted=[];
+    const qs=theme.catOrder.map(c=>groups[c]).filter(q=>q.length);
+    let safety=sortedByTheme.length+1;
+    while(qs.some(q=>q.length)&&safety-->0){
+      for(const q of qs){if(q.length)sorted.push(q.shift());}
+    }
+    // Re-sort within each day's slot by natural visit order (sight→nature→cafe→restaurant)
+    const visitOrder=['sight','nature','cafe','restaurant'];
+    const visitRank=p=>{const i=visitOrder.indexOf(p.cat);return i<0?99:i;};
 
     // Distribute across days — NO repeat within same plan
     const perDay=Math.max(3,Math.ceil(sorted.length/Math.max(1,tripDays)));
