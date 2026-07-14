@@ -874,6 +874,8 @@ function generatePlans(){
       let dayP=sorted.slice(start,start+perDay)
         .filter(p=>{if(usedKeys.has(p.ko))return false;usedKeys.add(p.ko);return true;})
         .map(p=>({...p}));
+      // Sort within the day by natural visit order (sights morning, meals/cafes later)
+      dayP.sort((a,b)=>visitRank(a)-visitRank(b));
       if(!dayP.length){
         // If we ran out, show placeholder
         dayP=[{time:'09:00',icon:'🗺️',cat:'sight',ko:'자유 탐험의 날',en:'Free Day',zh:'自由游览',ja:'自由旅行',
