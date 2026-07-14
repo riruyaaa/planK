@@ -579,10 +579,32 @@ function initMap(){
 }
 
 // ── TIME RECALC ──────────────────────────────────────────
-function extractTravelMin(p){const m=(p.move&&p.move.ko)||'';const r=m.match(/(\d+)분/);return r?parseInt(r[1]):30}
-function stayMin(cat){return cat==='restaurant'||cat==='cafe'?60:90}
-function addMin(t,m){const[h,mn]=t.split(':').map(Number);const tot=h*60+mn+m;return`${String(Math.floor(tot/60)%24).padStart(2,'0')}:${String(tot%60).padStart(2,'0')}`}
-function recalcTimes(day){for(let i=1;i<day.length;i++){day[i].time=addMin(day[i-1].time,stayMin(day[i-1].cat)+extractTravelMin(day[i-1]))}}
+function getTravelMins(place){
+  const ko=(place.move&&place.move.ko)||'';
+  const found=ko.match(/(\d+)분/);
+  return found?parseInt(found[1]):30;
+}
+function getStayMins(cat){
+  if(cat==='restaurant'||cat==='cafe')return 60;
+  return 90;
+}
+function toMins(timeStr){
+  const parts=timeStr.split(':');
+  return parseInt(parts[0])*60+parseInt(parts[1]);
+}
+function toTimeStr(totalMins){
+  const h=Math.floor(totalMins/60)%24;
+  const m=totalMins%60;
+  return(h<10?'0':'')+h+':'+(m<10?'0':'')+m;
+}
+function recalcTimes(day){
+  if(!day||day.length<2)return;
+  let cursor=toMins(day[0].time);
+  for(let i=1;i<day.length;i++){
+    cursor+=getStayMins(day[i-1].cat)+getTravelMins(day[i-1]);
+    day[i].time=toTimeStr(cursor);
+  }
+}
 
 // ── DRAG & DROP ──────────────────────────────────────────
 function initSortable(){
