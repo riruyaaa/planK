@@ -637,7 +637,7 @@ function makePlan(){
   goPage('p-loading');
   const steps=document.querySelectorAll('.ld-step');
   steps.forEach(s=>s.classList.remove('on'));
-  let i=0; const iv=setInterval(()=>{ if(i<steps.length){steps[i].classList.add('on');i++;}else{clearInterval(iv);setTimeout(showResult,500);} },700);
+  let i=0; const iv=setInterval(()=>{ if(i<steps.length){steps[i].classList.add('on');i++;}else{clearInterval(iv);setTimeout(showPlans,500);} },700);
 }
 function showResult(){
   const rd=RD[state.region]; if(!rd){goPage('p-input');return;}
