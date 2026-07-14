@@ -448,11 +448,6 @@ function setLang(l){
   lang=l;
   document.querySelectorAll('.lang-btn').forEach((b,i)=>b.classList.toggle('on',['ko','en','zh','ja'][i]===l));
   document.documentElement.lang=l;
-  document.querySelectorAll('input[type="date"]').forEach(inp=>{
-    const v=inp.value,par=inp.parentNode,n=inp.cloneNode(false);
-    par.replaceChild(n,inp);
-    if(v)n.value=v;
-  });
   applyTr();
 }
 function applyTr(){
