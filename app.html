@@ -529,7 +529,7 @@ function renderItinerary(){
   const hotelName=rd.hotel[lang]||rd.hotel.ko;
   let html='';
   currentItinerary.forEach((day,di)=>{
-    const sub=(DAY_SUBS[state.region]||[])[di]||'';
+    const sub=(DAY_SUBS[state.region]||[])[di]||(lang==='ko'?'자유 탐험':lang==='en'?'Free Exploration':lang==='zh'?'自由探索':'自由探索');
     html+=`<div class="day-card">
       <div class="day-header">${t('dayLabel')} ${di+1} <span class="day-header-sub">${sub}</span></div>
       <div class="sortable-list" id="day-list-${di}">`;
