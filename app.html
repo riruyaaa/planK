@@ -640,25 +640,7 @@ function makePlan(){
   let i=0; const iv=setInterval(()=>{ if(i<steps.length){steps[i].classList.add('on');i++;}else{clearInterval(iv);setTimeout(showPlans,500);} },700);
 }
 function showResult(){
-  const rd=RD[state.region]; if(!rd){goPage('p-input');return;}
-  const tripDays=calcTripDays();
-  const availDays=rd.days.length;
-  if(tripDays<=availDays){
-    currentItinerary=Array.from({length:tripDays},(_,i)=>rd.days[i].map(p=>({...p,note:'',customName:''})));
-  } else {
-    const pool=rd.days.flat().map(p=>({...p,note:'',customName:''}));
-    const perDay=Math.max(4,Math.ceil(pool.length/tripDays));
-    currentItinerary=Array.from({length:tripDays},(_,i)=>{
-      const day=Array.from({length:perDay},(__,j)=>({...pool[(i*perDay+j)%pool.length]}));
-      if(day.length>0)day[0].time='09:00';
-      recalcTimes(day);
-      return day;
-    });
-  }
-  goPage('p-result'); updateResultHeader(); renderItinerary();
-  mapVisible=false; document.getElementById('plan-map').classList.remove('show');
-  document.getElementById('map-toggle-btn').textContent=t('mapShow');
-  if(leafletMap){leafletMap.remove();leafletMap=null;}
+  showPlans();
 }
 function updateResultHeader(){
   const rd=RD[state.region]; if(!rd) return;
