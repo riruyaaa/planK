@@ -867,15 +867,25 @@ function showPlans(){
   const tripDays=calcTripDays();
   const nights=tripDays-1;
   const container=document.getElementById('plan-cards');
+  const photo=REGION_PHOTOS[state.region]||'';
   container.innerHTML=generatedPlans.map((plan,idx)=>`
     <div class="plan-card" onclick="selectPlan(${idx})">
-      <div class="plan-card-head" style="background:${plan.bg}">
-        <div class="plan-card-icon" style="background:${plan.color}20">${plan.icon}</div>
-        <div class="plan-card-title">
-          <div class="plan-card-name">${plan.name}</div>
-          <div class="plan-card-desc">${plan.desc}</div>
+      <div class="day-photo-header" style="height:120px;border-radius:16px 16px 0 0">
+        <img class="day-photo-img" src="${photo}" alt="${state.region}" onerror="this.style.display='none'">
+        <div class="day-photo-overlay" style="background:linear-gradient(to bottom,rgba(0,0,0,.05),${plan.color}cc)">
+          <div style="display:flex;align-items:flex-end;justify-content:space-between">
+            <div>
+              <div style="font-size:28px;line-height:1">${plan.icon}</div>
+              <div style="font-size:17px;font-weight:900;color:#fff;margin-top:4px">${plan.name}</div>
+            </div>
+            <span style="background:rgba(255,255,255,.25);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px">${plan.badge}</span>
+          </div>
         </div>
-        <span class="plan-badge" style="background:${plan.color}20;color:${plan.color}">${plan.badge}</span>
+      </div>
+      <div class="plan-card-head" style="background:${plan.bg};padding:10px 18px 6px">
+        <div class="plan-card-title" style="flex:1">
+          <div class="plan-card-desc" style="color:${plan.color}">${plan.desc}</div>
+        </div>
       </div>
       <div class="plan-highlights">
         ${plan.highlights.map(h=>`<div class="plan-hl" style="--c:${plan.color}">${h}</div>`).join('')}
