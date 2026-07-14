@@ -601,6 +601,7 @@ function initSortable(){
         const day=currentItinerary[di];
         const moved=day.splice(oldIndex,1)[0];
         day.splice(newIndex,0,moved);
+        recalcTimes(day);
         renderItinerary();
         if(mapVisible) initMap();
       }
