@@ -479,7 +479,10 @@ function makePlan(){
 }
 function showResult(){
   const rd=RD[state.region]; if(!rd){goPage('p-input');return;}
-  currentItinerary=rd.days.map(day=>day.map(p=>({...p,note:'',customName:''})));
+  const tripDays=calcTripDays();
+  currentItinerary=Array.from({length:tripDays},(_,i)=>
+    rd.days[i%rd.days.length].map(p=>({...p,note:'',customName:''}))
+  );
   goPage('p-result'); updateResultHeader(); renderItinerary();
   mapVisible=false; document.getElementById('plan-map').classList.remove('show');
   document.getElementById('map-toggle-btn').textContent=t('mapShow');
