@@ -1009,11 +1009,23 @@ function ribbonHTML(r){ if(!r) return ''; return `<div class="ribbon-badge">🎀
 function renderItinerary(){
   const rd=RD[state.region]; if(!rd) return;
   const hotelName=rd.hotel[lang]||rd.hotel.ko;
+  const photo=REGION_PHOTOS[state.region]||'';
+  const startDate=getDateVal('ds');
+  const DAY_KR=['일','월','화','수','목','금','토'];
   let html='';
   currentItinerary.forEach((day,di)=>{
     const sub=(DAY_SUBS[state.region]||[])[di]||(lang==='ko'?'자유 탐험':lang==='en'?'Free Exploration':lang==='zh'?'自由探索':'自由探索');
+    let dateLabel='';
+    if(startDate){const d=new Date(startDate);d.setDate(d.getDate()+di);dateLabel=`${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} (${DAY_KR[d.getDay()]})`;}
     html+=`<div class="day-card">
-      <div class="day-header">${t('dayLabel')} ${di+1} <span class="day-header-sub">${sub}</span></div>
+      <div class="day-photo-header">
+        <img class="day-photo-img" src="${photo}" alt="${state.region}" loading="lazy" onerror="this.style.display='none'">
+        <div class="day-photo-overlay">
+          <div class="day-num-badge">DAY ${di+1}</div>
+          <div class="day-photo-title">${sub}</div>
+          ${dateLabel?`<div class="day-photo-date">📅 ${dateLabel}</div>`:''}
+        </div>
+      </div>
       <div class="sortable-list" id="day-list-${di}">`;
     let dayTotal=0;
     day.forEach((p,pi)=>{
