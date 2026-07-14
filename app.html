@@ -820,42 +820,74 @@ let generatedPlans=[];
 function generatePlans(){
   const rd=RD[state.region]; if(!rd) return [];
   const tripDays=calcTripDays();
-  const availDays=rd.days.length;
+
+  // Separate places by category from ALL available days
+  const allP=rd.days.flat().map(p=>({...p,note:'',customName:''}));
+  const byC={restaurant:[],cafe:[],sight:[],nature:[]};
+  allP.forEach(p=>{if(byC[p.cat])byC[p.cat].push(p);});
+  const R=byC.restaurant, C=byC.cafe, S=byC.sight, N=byC.nature;
+
+  // Each theme gets a DIFFERENT subset — this drives different places AND different costs
+  const themePools={
+    // 맛집: ALL restaurants + ALL cafes + max 2 sights (no nature)
+    food:[...R,...C,...S.slice(0,Math.min(2,S.length))],
+    // 명소: ALL sights + ALL nature + up to 2 restaurants + 1 cafe
+    culture:[...S,...N,...R.slice(0,Math.min(2,R.length)),...C.slice(0,Math.min(1,C.length))],
+    // 힐링: ALL nature + ALL cafes + 1 sight + last restaurant (fewest paid attractions)
+    healing:[...N,...C,...S.slice(S.length>1?S.length-1:0),...R.slice(R.length>0?R.length-1:0)]
+  };
+
+  // Remove duplicates within each pool (in case any place is in multiple categories)
+  Object.keys(themePools).forEach(k=>{
+    const seen=new Set();
+    themePools[k]=themePools[k].filter(p=>{if(seen.has(p.ko))return false;seen.add(p.ko);return true;});
+  });
+
   return PLAN_THEMES.map(theme=>{
-    // Build theme-sorted pool (no cycling — each place appears ONCE)
-    const fullPool=rd.days.flat().map(p=>({...p,note:'',customName:''}));
+    const pool=themePools[theme.key]&&themePools[theme.key].length>=2
+      ? themePools[theme.key]
+      : allP; // fallback to all if pool too small
+
     const catRank=p=>{const i=theme.catOrder.indexOf(p.cat);return i<0?99:i;};
-    const sortedPool=[...fullPool].sort((a,b)=>catRank(a)-catRank(b));
+    const sorted=[...pool].sort((a,b)=>catRank(a)-catRank(b));
+
+    // Distribute across days — NO repeat within same plan
+    const perDay=Math.max(3,Math.ceil(sorted.length/Math.max(1,tripDays)));
+    const usedKeys=new Set();
+
     const days=Array.from({length:tripDays},(_,i)=>{
-      let dayPlaces;
-      if(tripDays<=availDays){
-        // Use separate day data — no overlap between days
-        dayPlaces=rd.days[i].map(p=>({...p,note:'',customName:''}));
-        dayPlaces.sort((a,b)=>catRank(a)-catRank(b));
-      } else {
-        // Distribute pool evenly across days WITHOUT modulo cycling
-        const perDay=Math.max(3,Math.ceil(sortedPool.length/tripDays));
-        const start=i*perDay;
-        dayPlaces=sortedPool.slice(start,start+perDay).map(p=>({...p}));
-        if(dayPlaces.length===0){
-          dayPlaces=[{time:'09:00',icon:'🗺️',cat:'sight',ko:'자유 탐험의 날',en:'Free Day',zh:'自由游览',ja:'自由旅行',
-            coords:null,ribbon:0,desc:{ko:'이 날은 자유롭게! 가고 싶은 곳을 직접 추가해보세요.',en:'Free day! Add your own spots.'},
-            move:{ko:'자유',en:'Free'},mc:'',note:'',customName:'',cost:0}];
-        }
+      const start=i*perDay;
+      let dayP=sorted.slice(start,start+perDay)
+        .filter(p=>{if(usedKeys.has(p.ko))return false;usedKeys.add(p.ko);return true;})
+        .map(p=>({...p}));
+      if(!dayP.length){
+        // If we ran out, show placeholder
+        dayP=[{time:'09:00',icon:'🗺️',cat:'sight',ko:'자유 탐험의 날',en:'Free Day',zh:'自由游览',ja:'自由旅行',
+          coords:null,ribbon:0,desc:{ko:'이 날은 자유롭게 탐험해보세요!',en:'Explore freely today!'},
+          move:{ko:'자유',en:'Free'},mc:'',note:'',customName:'',cost:0}];
       }
-      if(dayPlaces.length>0)dayPlaces[0].time='09:00';
-      recalcTimes(dayPlaces);
-      return dayPlaces;
+      if(dayP.length)dayP[0].time='09:00';
+      recalcTimes(dayP);
+      return dayP;
     });
-    const allPlaces=days.flat();
+
+    // Highlights: pick from the PRIMARY 2 categories of this theme
+    const hlCats=theme.catOrder.slice(0,2);
     const highlights=[];
-    for(const cat of theme.catOrder){
-      const found=allPlaces.find(p=>p.cat===cat&&!highlights.includes(p.ko));
-      if(found)highlights.push(found.ko);
+    for(const cat of hlCats){
+      pool.filter(p=>p.cat===cat).slice(0,2).forEach(p=>{
+        if(!highlights.includes(p.ko))highlights.push(p.ko);
+      });
       if(highlights.length>=3)break;
     }
-    while(highlights.length<3){const f=allPlaces.find(p=>!highlights.includes(p.ko));if(!f)break;highlights.push(f.ko);}
-    const totalBudget=allPlaces.reduce((s,p)=>s+getC(p),0);
+    while(highlights.length<3){
+      const f=pool.find(p=>!highlights.includes(p.ko));
+      if(!f)break;
+      highlights.push(f.ko);
+    }
+    highlights.splice(3);
+
+    const totalBudget=days.flat().reduce((s,p)=>s+getC(p),0);
     return {...theme,days,highlights,totalBudget};
   });
 }
