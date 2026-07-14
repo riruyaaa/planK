@@ -141,6 +141,51 @@ body{font-family:"Apple SD Gothic Neo","Malgun Gothic",Arial,sans-serif;color:va
 .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:.3s;white-space:nowrap;z-index:600}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .leaflet-control-attribution{font-size:9px}
+/* ── PLAN SELECT PAGE ── */
+#p-plans{background:#f8faff;overflow-y:auto}
+.plans-top{background:linear-gradient(135deg,#0f1f6b,#1d4ed8);padding:20px;color:#fff;text-align:center}
+.plans-top h2{font-size:18px;font-weight:800;margin:0 0 4px}
+.plans-top p{font-size:13px;opacity:.8;margin:0}
+.plan-cards{padding:16px;display:flex;flex-direction:column;gap:14px;padding-bottom:80px}
+.plan-card{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.08);border:2px solid transparent;transition:.2s;cursor:pointer}
+.plan-card:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.12)}
+.plan-card-head{padding:16px 18px 12px;display:flex;align-items:center;gap:12px}
+.plan-card-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.plan-card-title{flex:1}
+.plan-card-name{font-size:16px;font-weight:800;color:#0f1f6b}
+.plan-card-desc{font-size:12px;color:#6b7280;margin-top:2px}
+.plan-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:99px;white-space:nowrap}
+.plan-highlights{padding:0 18px 12px;display:flex;flex-direction:column;gap:5px}
+.plan-hl{font-size:12px;color:#374151;display:flex;align-items:center;gap:6px}
+.plan-hl::before{content:'✓';font-weight:800;font-size:11px}
+.plan-card-foot{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid #f3f4f6}
+.plan-budget-label{font-size:11px;color:#9ca3af;font-weight:600}
+.plan-budget-val{font-size:15px;font-weight:900}
+.plan-select-btn{padding:9px 16px;border:none;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;color:#fff;transition:.15s}
+.plan-select-btn:hover{opacity:.9;transform:scale(1.03)}
+/* ── HOTEL SECTION ── */
+.section-card{background:#fff;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.section-title{font-size:15px;font-weight:800;color:#0f1f6b;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.hotel-list{display:flex;flex-direction:column;gap:10px}
+.hotel-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border:1.5px solid #e5e7eb;border-radius:12px;transition:.15s}
+.hotel-item.recommended{border-color:#f97316;background:#fff7ed}
+.hotel-icon{font-size:26px;flex-shrink:0}
+.hotel-info{flex:1;min-width:0}
+.hotel-name{font-size:13px;font-weight:700;color:#1f2937;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hotel-tags{display:flex;gap:4px;margin-top:3px;flex-wrap:wrap}
+.hotel-tag{font-size:10px;background:#f3f4f6;color:#6b7280;padding:1px 6px;border-radius:4px;font-weight:600}
+.hotel-tag.rec{background:#fff7ed;color:#f97316}
+.hotel-price{font-size:14px;font-weight:800;color:#f97316;white-space:nowrap;flex-shrink:0}
+.hotel-night{font-size:10px;color:#9ca3af;font-weight:500}
+/* ── TRANSPORT SECTION ── */
+.transport-list{display:flex;flex-direction:column;gap:8px}
+.transport-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#f8faff;border-radius:10px}
+.transport-icon{font-size:22px;width:36px;text-align:center;flex-shrink:0}
+.transport-info{flex:1}
+.transport-name{font-size:13px;font-weight:700;color:#1f2937}
+.transport-detail{font-size:11px;color:#6b7280;margin-top:1px}
+.transport-price{font-size:13px;font-weight:800;color:#1d4ed8;white-space:nowrap;flex-shrink:0}
+.transport-tip{margin-top:10px;padding:10px 12px;background:#eff6ff;border-radius:10px;font-size:12px;color:#1d4ed8;font-weight:600;line-height:1.5}
 /* ── BUDGET & ADD PLACE ── */
 .place-cost{font-size:11px;font-weight:700;color:#f97316;padding:2px 7px;background:#fff7ed;border-radius:6px;flex-shrink:0;white-space:nowrap;margin-right:40px}
 .day-budget-bar{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:linear-gradient(135deg,#fff7ed,#fffbf5);border-top:1px dashed #fed7aa;font-size:13px}
