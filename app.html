@@ -441,6 +441,7 @@ let currentItinerary=[], leafletMap=null, mapVisible=false, editingIdx=null;
 
 function t(k){ return (I18N[lang]||I18N.ko)[k]||k; }
 function pn(p){ return p.customName||(p[lang]||p.ko); }
+function getDateVal(p){const y=document.getElementById(p+'-y').value,m=document.getElementById(p+'-m').value,d=document.getElementById(p+'-d').value;return y&&m&&d?`${y}-${m}-${d}`:''}
 
 // ── LANGUAGE ─────────────────────────────────────────────
 function setLang(l){
